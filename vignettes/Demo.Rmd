@@ -1,0 +1,96 @@
+---
+title: "Models that match xtdpdml"
+author: "Jacob A. Long"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Here's a rundown of models that match `xtdpdml`. First, some code for setup.
+
+Load the package, use built-in wages data from Richard Williams.
+
+```{r}
+library(clfe)
+data("WageData", package = "clfe")
+```
+
+This next line of code converts the data to class `panel_data`, which is a class
+specific to this package that helps to simplify the treatment of the long-form
+panel data.
+
+```{r}
+wages <- panel_data(WageData, id = id, wave = t)
+```
+
+
+## *Socius* article example
+
+Note: To get matching standard errors, set `information = "observed"` to 
+override `lavaan`'s default, `information = "expected"`.
+
+```{r}
+cl <- clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages, err_inv = T,
+           information = "observed")
+summary(cl)
+```
+
+### Without constrained error variance
+
+```{r}
+cl <- clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages, err_inv = F,
+           information = "observed")
+summary(cl)
+```
+
+### With constant variance
+
+```{r}
+cl <- clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages, const_inv = T,
+           information = "observed")
+summary(cl)
+```
+
+## Only exogenous predictors
+
+```{r}
+cl <- clfe(wks ~ lag(union) + lag(lwage) | ed, data = wages,
+           information = "observed")
+summary(cl)
+```
+
+## Only predetermined predictors
+
+```{r}
+cl <- clfe(wks ~ pre(lag(union)) + pre(lag(lwage)) | ed, data = wages,
+           information = "observed")
+summary(cl)
+```
+
+## Multiple exogenous and predetermined predictors
+
+```{r}
+cl <- clfe(wks ~ pre(lag(union)) + pre(lag(ind)) + lag(occ) + lag(lwage) | ed,
+           data = wages,
+           information = "observed")
+summary(cl)
+```
+
+## Multiple constants
+
+```{r}
+cl <- clfe(wks ~ pre(lag(union)) + lag(lwage) | ed + blk, data = wages, 
+           information = "observed")
+summary(cl)
+```
+
+## Simultaneous predictors
+
+```{r}
+cl <- clfe(wks ~ pre(union) + lwage | ed + blk, data = wages,
+           information = "observed")
+summary(cl)
+```

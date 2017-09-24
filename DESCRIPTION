@@ -1,0 +1,22 @@
+Package: clfe
+Type: Package
+Title: Fit Cross-Lagged Fixed Effects Models with Maximum Likelihood
+Version: 0.1.0
+Authors@R: c(person(given = "Jacob A.",
+  family = "Long", email = "long.1377@osu.edu", 
+  role = c("aut", "cre")),
+  person(given = "Richard A.", family = "Williams", role = "aut"))
+Description: Implements the models described by Allison, Williams, and
+ Moral-Benito (2017) in R. This class of models uses structural equation 
+ modeling to specify dynamic (lagged dependent variable) models with 
+ fixed effects for panel data. Additionally, models may have predictors
+ that are only weakly exogenous, i.e., are affected by prior values of 
+ the dependent variable.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: lavaan
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
