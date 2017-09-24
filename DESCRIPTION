@@ -15,7 +15,8 @@ Description: Implements the models described by Allison, Williams, and
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: lavaan
+Imports: lavaan,
+    stringr
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
