@@ -275,7 +275,7 @@ summary.clfe <- function(x, digits = 3, standardized = FALSE, ...) {
 
 }
 
-##### lavaaan summary ##########################################################
+##### lavaaan summary methods ##################################################
 
 #' @export
 
@@ -290,6 +290,22 @@ lavSummary <- function(x, ...) {
 lavSummary.clfe <- function(x, ...) {
 
   lavaan::summary(x$fit, ...)
+
+}
+
+#' @export
+
+fitmeasures.clfe <- function(x, ...) {
+
+  lavaan::fitmeasures(x$fit, ...)
+
+}
+
+#' @export
+
+fitMeasures.clfe <- function(x, ...) {
+
+  lavaan::fitMeasures(x$fit, ...)
 
 }
 

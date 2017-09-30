@@ -3,6 +3,8 @@
 S3method(lavSummary,clfe)
 S3method(summary,clfe)
 export(clfe)
+export(fitMeasures.clfe)
+export(fitmeasures.clfe)
 export(lavSummary)
 export(panel_data)
 importFrom(lavaan,lavInspect)
