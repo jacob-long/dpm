@@ -23,6 +23,7 @@
   \item{fem}{Binary indicator for whether respondent is female (= 1)}
   \item{blk}{Binary indicator for whether respondent is African-American (= 1)}
   \item{ed}{Years of education}
+  \item{exp}{Years in the workforce.}
 }}
 \source{
 These data are all over the place. This particular file was
