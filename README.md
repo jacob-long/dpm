@@ -194,7 +194,6 @@ The following `xtdpdml` (Stata) options are missing:
 -   xfree
 -   yfree
 -   re
--   alphafree
 -   ylag
 -   std
 
