@@ -3,6 +3,18 @@ This R package implements the cross-lagged panel model with fixed effects descri
 
 Note: This is ALPHA software. Expect bugs and missing functionality. Cross-reference all results with xtdpdml for Stata. Go to <https://www3.nd.edu/~rwilliam/dynamic/> to learn about xtdpdml and the underlying method. You may also be interested in the article by Paul Allison, Richard Williams, and Enrique Moral-Benito in **Socius**, accessible [here](http://journals.sagepub.com/doi/full/10.1177/2378023117710578)
 
+Installation
+============
+
+You will need to the `devtools` package installed to install this package from Github.
+
+``` r
+install.packages("devtools")
+devtools::install_github("jacob-long/clfe")
+```
+
+Also note this package's dependencies: `lavaan`, `stringr`
+
 Usage
 =====
 

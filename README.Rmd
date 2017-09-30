@@ -27,6 +27,18 @@ in the article by Paul Allison, Richard Williams, and Enrique Moral-Benito in
 **Socius**, accessible
 [here](http://journals.sagepub.com/doi/full/10.1177/2378023117710578)
 
+# Installation
+
+You will need to the `devtools` package installed to install this package
+from Github.
+
+```{r eval = F}
+install.packages("devtools")
+devtools::install_github("jacob-long/clfe")
+```
+
+Also note this package's dependencies: `lavaan`, `stringr`
+
 # Usage
 
 This package assumes your data are in *long* format, with each row representing
