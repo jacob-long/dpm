@@ -4,9 +4,9 @@
 \alias{clfe}
 \title{Cross-lagged panel models with fixed effects}
 \usage{
-clfe(formula, data, id = NULL, wave = NULL, err_inv = FALSE,
-  const_inv = FALSE, alpha_free = FALSE, last.wave = FALSE,
-  print_only = FALSE, ...)
+clfe(formula, data, id = NULL, wave = NULL, err.inv = FALSE,
+  const.inv = FALSE, alpha.free = FALSE, last.wave = FALSE,
+  print.only = FALSE, ...)
 }
 \arguments{
 \item{formula}{Model formula. See details for instructions on specifying
@@ -20,20 +20,20 @@ observation is. Not needed if \code{data} is a "panel_data" object.}
 \item{wave}{Name of the data column that identifies which wave the
 observation is from. Not needed if \code{data} is a "panel_data" object.}
 
-\item{err_inv}{Constrain the error variance to be equal across waves.
+\item{err.inv}{Constrain the error variance to be equal across waves.
 Default is FALSE.}
 
-\item{const_inv}{Constrain the dependent variable's variance to be equal
+\item{const.inv}{Constrain the dependent variable's variance to be equal
 across waves. This removes cross-sectional dependence. Default is FALSE.}
 
-\item{alpha_free}{Estimate each wave of the dependent variable's loading on
+\item{alpha.free}{Estimate each wave of the dependent variable's loading on
 the alpha latent variable. Default is FALSE, meaning each wave has a loading
 of 1.}
 
 \item{last.wave}{Use the final wave of lagged predictors? Default is FALSE,
 but enables better specification of 3-wave lagged models.}
 
-\item{print_only}{Instead of estimating the model, print the \pkg{lavaan}
+\item{print.only}{Instead of estimating the model, print the \pkg{lavaan}
 model string to the console instead.}
 
 \item{...}{Extra parameters to pass \code{\link[lavaan]{sem}}. Examples
@@ -60,6 +60,29 @@ An object of class "clfe," which has its own
 Estimate dynamic panel models with fixed effects via
 maximum likelihood estimation.
 }
+\details{
+The right-hand side of the formula has two parts, separated by a bar
+ (\code{|}). The first part should include the time-varying predictors.
+ The second part, then, is for the time-invariant variables. If you put
+ a time-varying variable in the second part of the formula, by default
+ the first wave's value of that variable is treated as the constant.
+
+ You must include time-varying predictors. If you do not include a bar
+ in the formula, all variables are treated as time-varying.
+
+ \emph{Predetermined variables}:
+
+ To set a variable as predetermined, or weakly exogenous, surround the
+ variable with a \code{pre} function. For instance, if you want the variable
+ \code{union} to be predetermined, you could specify the formula like this:
+ \code{wks ~ pre(union) + lwage | ed}, where \code{wks} is the dependent
+ variable, \code{lwage} is a strictly exogenous time-varying predictor,
+ and \code{ed} is a strictly exogenous time-invariant predictor.
+
+ To lag a predictor, surround the variable with a \code{lag} function in
+ the same way. Note that the lag function used is specific to this package,
+ so it does not work the same way as the built-in lag function.
+}
 \examples{
 # Load example data
 data("WageData", package = "clfe")
@@ -68,7 +91,7 @@ wages <- panel_data(WageData, id = id, wave = t)
 
 # Replicates Allison, Williams, & Moral-Benito (2017) analysis
 fit <- clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
-            err_inv = TRUE, information = "observed")
+            err.inv = TRUE, information = "observed")
 # Note: information = "observed" only needed to match Stata/SAS standard errors
 summary(fit)
 

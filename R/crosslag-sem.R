@@ -10,20 +10,45 @@
 #'  observation is. Not needed if \code{data} is a "panel_data" object.
 #' @param wave Name of the data column that identifies which wave the
 #'  observation is from. Not needed if \code{data} is a "panel_data" object.
-#' @param err_inv Constrain the error variance to be equal across waves.
+#' @param err.inv Constrain the error variance to be equal across waves.
 #'  Default is FALSE.
-#' @param const_inv Constrain the dependent variable's variance to be equal
+#' @param const.inv Constrain the dependent variable's variance to be equal
 #'  across waves. This removes cross-sectional dependence. Default is FALSE.
-#' @param alpha_free Estimate each wave of the dependent variable's loading on
+#' @param alpha.free Estimate each wave of the dependent variable's loading on
 #'  the alpha latent variable. Default is FALSE, meaning each wave has a loading
 #'  of 1.
 #' @param last.wave Use the final wave of lagged predictors? Default is FALSE,
 #'  but enables better specification of 3-wave lagged models.
-#' @param print_only Instead of estimating the model, print the \pkg{lavaan}
+#' @param print.only Instead of estimating the model, print the \pkg{lavaan}
 #'  model string to the console instead.
 #' @param ... Extra parameters to pass \code{\link[lavaan]{sem}}. Examples
 #'  could be \code{missing = "fiml"} for missing data or
 #'  \code{estimator = "MLM"} for robust estimation.
+#'
+#' @details
+#'
+#'  The right-hand side of the formula has two parts, separated by a bar
+#'  (\code{|}). The first part should include the time-varying predictors.
+#'  The second part, then, is for the time-invariant variables. If you put
+#'  a time-varying variable in the second part of the formula, by default
+#'  the first wave's value of that variable is treated as the constant.
+#'
+#'  You must include time-varying predictors. If you do not include a bar
+#'  in the formula, all variables are treated as time-varying.
+#'
+#'  \emph{Predetermined variables}:
+#'
+#'  To set a variable as predetermined, or weakly exogenous, surround the
+#'  variable with a \code{pre} function. For instance, if you want the variable
+#'  \code{union} to be predetermined, you could specify the formula like this:
+#'  \code{wks ~ pre(union) + lwage | ed}, where \code{wks} is the dependent
+#'  variable, \code{lwage} is a strictly exogenous time-varying predictor,
+#'  and \code{ed} is a strictly exogenous time-invariant predictor.
+#'
+#'  To lag a predictor, surround the variable with a \code{lag} function in
+#'  the same way. Note that the lag function used is specific to this package,
+#'  so it does not work the same way as the built-in lag function.
+#'
 #'
 #' @return An object of class "clfe," which has its own
 #'  \code{\link[clfe]{summary}} method.
@@ -55,16 +80,16 @@
 #'
 #' # Replicates Allison, Williams, & Moral-Benito (2017) analysis
 #' fit <- clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
-#'             err_inv = TRUE, information = "observed")
+#'             err.inv = TRUE, information = "observed")
 #' # Note: information = "observed" only needed to match Stata/SAS standard errors
 #' summary(fit)
 #'
 #'
 
 clfe <- function(formula, data, id = NULL, wave = NULL,
-                err_inv = FALSE, const_inv = FALSE,
-                alpha_free = FALSE, last.wave = FALSE,
-                print_only = FALSE, ...) {
+                err.inv = FALSE, const.inv = FALSE,
+                alpha.free = FALSE, last.wave = FALSE,
+                print.only = FALSE, ...) {
 
   if (class(data)[1] == "panel_data") {
     id <- attr(data, "id")
@@ -108,11 +133,11 @@ clfe <- function(formula, data, id = NULL, wave = NULL,
 
   model <- model_builder(mf = mf, dv = dv, endogs = endogs, exogs = exogs,
                          constants = constants, id = id, wave = wave,
-                         err_inv = err_inv, const_inv = const_inv,
-                         alpha_free = alpha_free,
+                         err.inv = err.inv, const.inv = const.inv,
+                         alpha.free = alpha.free,
                          last.wave = last.wave)
 
-  if (print_only == TRUE) {
+  if (print.only == TRUE) {
     cat(model$model)
     return(invisible(model$model))
   }

@@ -1,6 +1,6 @@
 
 model_builder <- function(mf, dv, endogs, exogs, constants, id, wave, last.wave,
-                          err_inv, const_inv, alpha_free, print = FALSE) {
+                          err.inv, const.inv, alpha.free, print = FALSE) {
 
 
 ##### Get lag info ############################################################
@@ -129,7 +129,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave, last.wave,
   if (length(waves) > 2) {
 
     # Let alpha vary across time if user requests
-    if (alpha_free == TRUE) {
+    if (alpha.free == TRUE) {
 
       a_f <- ""
 
@@ -643,7 +643,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave, last.wave,
 
 
   # If user wants DV error variances for each wave to be held constant, do it
-  if (err_inv == TRUE) {
+  if (err.inv == TRUE) {
 
     err_var_eqs <- c()
     for (w in (start):length(waves)) {
@@ -668,7 +668,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave, last.wave,
   dv_vars <- c()
   dv_vars_ann <- NULL
 
-  if (const_inv == TRUE) {
+  if (const.inv == TRUE) {
 
       for (w in start:end) {
 
