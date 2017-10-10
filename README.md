@@ -1,5 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Travis-CI Build Status](https://travis-ci.org/jacob-long/clfe.svg?branch=master)](https://travis-ci.org/jacob-long/clfe) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jacob-long/clfe?branch=master&svg=true)](https://ci.appveyor.com/project/jacob-long/clfe) [![Coverage Status](https://img.shields.io/coveralls/jacob-long/clfe.svg)](https://coveralls.io/r/jacob-long/clfe?branch=master)
+[![Travis-CI Build Status](https://travis-ci.org/jacob-long/clfe.svg?branch=master)](https://travis-ci.org/jacob-long/clfe) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jacob-long/clfe?branch=master&svg=true)](https://ci.appveyor.com/project/jacob-long/clfe) [![Coverage Status](https://img.shields.io/codecov/c/github/jacob-long/clfe/master.svg)](https://codecov.io/github/jacob-long/clfe?branch=master)
 
 This R package implements the cross-lagged panel model with fixed effects described by Allison, Williams, and Moral-Benito (2017). It is effectively a convenience wrapper to the `lavaan` package. This package will reshape your data, specify the model properly, and fit it with `lavaan`.
 

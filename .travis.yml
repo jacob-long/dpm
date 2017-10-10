@@ -5,4 +5,4 @@ sudo: false
 cache: packages
 
 after_success:
-  - Rscript -e 'covr::coveralls(type = "all")'
+  - Rscript -e 'covr::codecov(type = "all")'
