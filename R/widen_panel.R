@@ -1,3 +1,5 @@
+#' @importFrom stats complete.cases reshape
+
 widen_panel <- function(data, id = NULL, wave = NULL, varying, constants) {
 
   if (class(data)[1] == "panel_data" & is.null(id) & is.null(wave)) {

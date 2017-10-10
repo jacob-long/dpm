@@ -1,7 +1,7 @@
 Package: clfe
 Type: Package
 Title: Fit Cross-Lagged Fixed Effects Models with Maximum Likelihood
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(person(given = "Jacob A.",
   family = "Long", email = "long.1377@osu.edu", 
   role = c("aut", "cre")),
@@ -15,9 +15,11 @@ Description: Implements the models described by Allison, Williams, and
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Depends: R (>= 2.10)
 Imports: lavaan,
     stringr
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    covr
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
