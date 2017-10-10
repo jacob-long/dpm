@@ -72,7 +72,11 @@ summary(fit)
     # p(RMSEA < .05) = 0.986
     # SRMR = 0.027 
     # 
-    # NULL
+    #               Est.   S.E.  z-value p        
+    # union (t - 1) -1.206 0.522 -2.309  0.021 *  
+    # lwage (t - 1) 0.588  0.488 1.204   0.229    
+    # ed            -0.107 0.056 -1.893  0.058 .  
+    # wks (t - 1)   0.188  0.02  9.586   0     ***
     # 
     # Model converged after 579 iterations
 

@@ -264,7 +264,7 @@ print.summary.clfe <- function(x, ...) {
 
   a <- attributes(x)
   fitms <- x$fitmeasures
-  coeft <- x$coeftable
+  coeft <- x$coefficients
 
 
   cat("MODEL INFO\n")
