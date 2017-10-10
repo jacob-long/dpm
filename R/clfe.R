@@ -21,6 +21,8 @@
 #'  but enables better specification of 3-wave lagged models.
 #' @param print.only Instead of estimating the model, print the \pkg{lavaan}
 #'  model string to the console instead.
+#' @param digits How many digits should be printed in the model summary?
+#'  Default is 3.
 #' @param ... Extra parameters to pass \code{\link[lavaan]{sem}}. Examples
 #'  could be \code{missing = "fiml"} for missing data or
 #'  \code{estimator = "MLM"} for robust estimation.
@@ -50,8 +52,7 @@
 #'  so it does not work the same way as the built-in lag function.
 #'
 #'
-#' @return An object of class "clfe," which has its own
-#'  \code{\link[clfe]{summary}} method.
+#' @return An object of class "clfe," which has its own \code{summary} method.
 #'
 #'  The clfe object also returns: \itemize{
 #'
@@ -89,7 +90,7 @@
 clfe <- function(formula, data, id = NULL, wave = NULL,
                 err.inv = FALSE, const.inv = FALSE,
                 alpha.free = FALSE, last.wave = FALSE,
-                print.only = FALSE, ...) {
+                print.only = FALSE, digits = 3, ...) {
 
   if (class(data)[1] == "panel_data") {
     id <- attr(data, "id")
@@ -171,7 +172,8 @@ clfe <- function(formula, data, id = NULL, wave = NULL,
   out <- structure(out, pred.labs = pred.labs, pred.lags = pred.lags,
                    dv = dv, tot_obs = nobs_o,
                    complete_obs = model$complete_obs, endogs = endogs,
-                   exogs = exogs, start = model$start, end = model$end)
+                   exogs = exogs, start = model$start, end = model$end,
+                   digits = digits)
 
   class(out) <- "clfe"
 
@@ -184,13 +186,13 @@ clfe <- function(formula, data, id = NULL, wave = NULL,
 
 #' @export
 
-summary.clfe <- function(x, digits = 3, standardized = FALSE, ...) {
+summary.clfe <- function(object, ...) {
 
   # Save coefficient vector
-  coefs <- lavaan::parameterestimates(x$fit)
+  coefs <- lavaan::parameterestimates(object$fit)
 
   # Get attributes
-  a <- attributes(x)
+  a <- attributes(object)
 
   # Figure out where in the list the first and final fixed coefficient is
   p_index <- which(coefs$label == "p")[1]
@@ -221,7 +223,7 @@ summary.clfe <- function(x, digits = 3, standardized = FALSE, ...) {
   colnames(coeft) <- c("Est.","S.E.","z-value","p","")
 
   pvals <- coeft[,"p"]
-  coeft <- round(coeft, digits)
+  coeft <- round(coeft, a$digits)
 
   sigstars <- c()
   for (y in 1:nrow(coeft)) {
@@ -241,11 +243,29 @@ summary.clfe <- function(x, digits = 3, standardized = FALSE, ...) {
   coeft[,ncol(coeft)] <- sigstars
   coeft <- as.table(coeft)
 
-  converged <- lavaan::lavInspect(x$fit, what = "converged")
-  iters <- lavaan::lavInspect(x$fit, what = "iterations")
+  converged <- lavaan::lavInspect(object$fit, what = "converged")
+  iters <- lavaan::lavInspect(object$fit, what = "iterations")
 
-  fitms <- lavaan::fitmeasures(x$fit)
-  fitms <- round(fitms, digits)
+  fitms <- lavaan::fitmeasures(object$fit)
+  fitms <- round(fitms, a$digits)
+
+  out <- list(coefficients = coeft, model = object, fitmeasures = fitms)
+  class(out) <- "summary.clfe"
+  out <- structure(out, dv = a$dv, tot_obs = a$tot_bs,
+                   complete_obs = a$complete_obs, start = a$start, end = a$end,
+                   converged = converged, iters = iters)
+  return(out)
+
+}
+
+#' @export
+
+print.summary.clfe <- function(x, ...) {
+
+  a <- attributes(x)
+  fitms <- x$fitmeasures
+  coeft <- x$coeftable
+
 
   cat("MODEL INFO\n")
   cat("Dependent variable:", a$dv, "\n")
@@ -256,56 +276,69 @@ summary.clfe <- function(x, digits = 3, standardized = FALSE, ...) {
   cat("MODEL FIT\n")
   cat("Chi-squared (", fitms["df"], ") = ", fitms["chisq"], "\n",
       sep = "")
-  # cat("CFI =", fitms["cfi"],"\n")
+
+  # cat("CFI =", fitms["cfi"],"\n") # Can't trust these yet
   # cat("TLI =", fitms["tli"],"\n")
-  cat("RMSEA = ", fitms["rmsea"],", ", "90% CI [", fitms["rmsea.ci.lower"], ", ",
-      fitms["rmsea.ci.upper"],"]", "\np(RMSEA < .05) = ", fitms["rmsea.pvalue"], "\n",
-      sep = "")
+  #
+  cat("RMSEA = ", fitms["rmsea"],", ", "90% CI [", fitms["rmsea.ci.lower"],
+      ", ", fitms["rmsea.ci.upper"],"]", "\np(RMSEA < .05) = ",
+      fitms["rmsea.pvalue"], "\n", sep = "")
   cat("SRMR =", fitms["srmr"], "\n\n")
 
   print(coeft)
 
   cat("\n")
 
-  if (converged == TRUE) {
-    cat("Model converged after", iters, "iterations\n")
+  if (a$converged == TRUE) {
+    cat("Model converged after", a$iters, "iterations\n")
   } else {
-    cat("WARNING: Model failed to converge after", iters, "iterations\n")
+    cat("WARNING: Model failed to converge after", a$iters, "iterations\n")
   }
 
 }
 
-##### lavaaan summary methods ##################################################
+##### lavaaan summary methods #################################################
 
+#' @title lavaan interface to clfe objects
+#' @description These are essentially shortcuts to commonly-desired lavaan
+#'  functions to be used with clfe objects, which contain a lavaan model.
+#' @param x The \code{\link{clfe}} object
+#' @param ... Other arguments to the the lavaan function.
+#' @details Here are the currently supported functions with a brief explantion:
+#'
+#'   \itemize{
+#'
+#'     \item \code{lav_summary}: lavaan's summary function.
+#'     \item \code{lav_fitmeasures}: lavaan's \code{summary}
+#'
+#'   }
+#'
+#' @examples
+#'
+#' # Load example data
+#' data("WageData", package = "clfe")
+#' # Convert data to panel_data format for ease of use
+#' wages <- panel_data(WageData, id = id, wave = t)
+#'
+#' fit <- clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages)
+#' lav_summary(fit)
+#' lav_fitmeasures(fit)
+#'
+#' @rdname lavaan-functions
 #' @export
 
-lavSummary <- function(x, ...) {
-
-  UseMethod("lavSummary", x)
-
-}
-
-#' @export
-
-lavSummary.clfe <- function(x, ...) {
+lav_summary <- function(x, ...) {
 
   lavaan::summary(x$fit, ...)
 
 }
 
+#' @rdname lavaan-functions
 #' @export
 
-fitmeasures.clfe <- function(x, ...) {
+lav_fitmeasures <- function(x, ...) {
 
   lavaan::fitmeasures(x$fit, ...)
-
-}
-
-#' @export
-
-fitMeasures.clfe <- function(x, ...) {
-
-  lavaan::fitMeasures(x$fit, ...)
 
 }
 
