@@ -1,4 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+[![Travis-CI Build Status](https://travis-ci.org/jacob-long/clfe.svg?branch=master)](https://travis-ci.org/jacob-long/clfe) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jacob-long/clfe?branch=master&svg=true)](https://ci.appveyor.com/project/jacob-long/clfe) [![Coverage Status](https://img.shields.io/coveralls/jacob-long/clfe.svg)](https://coveralls.io/r/jacob-long/clfe?branch=master)
+
 This R package implements the cross-lagged panel model with fixed effects described by Allison, Williams, and Moral-Benito (2017). It is effectively a convenience wrapper to the `lavaan` package. This package will reshape your data, specify the model properly, and fit it with `lavaan`.
 
 Note: This is ALPHA software. Expect bugs and missing functionality. Cross-reference all results with xtdpdml for Stata. Go to <https://www3.nd.edu/~rwilliam/dynamic/> to learn about xtdpdml and the underlying method. You may also be interested in the article by Paul Allison, Richard Williams, and Enrique Moral-Benito in **Socius**, accessible [here](http://journals.sagepub.com/doi/full/10.1177/2378023117710578)
@@ -60,7 +62,7 @@ summary(fit)
 
     # MODEL INFO
     # Dependent variable: wks 
-    # Total observations: 595 
+    # Total observations: 
     # Complete observations: 595 
     # Time periods: 2 - 7 
     # 
@@ -70,11 +72,7 @@ summary(fit)
     # p(RMSEA < .05) = 0.986
     # SRMR = 0.027 
     # 
-    #               Est.   S.E.  z-value p        
-    # union (t - 1) -1.206 0.522 -2.309  0.021 *  
-    # lwage (t - 1) 0.588  0.488 1.204   0.229    
-    # ed            -0.107 0.056 -1.893  0.058 .  
-    # wks (t - 1)   0.188  0.02  9.586   0     ***
+    # NULL
     # 
     # Model converged after 579 iterations
 
@@ -187,7 +185,7 @@ You can also get the fitted `lavaan` model object at `fit$fit`.
 
 ### Get full `lavaan` summary
 
-While you could extract the `lavaan` model and apply any of `lavaan`'s functions to it (and you should!), as a convenience you can use `lavSummary` to get `lavaan`'s summary of the model.
+While you could extract the `lavaan` model and apply any of `lavaan`'s functions to it (and you should!), as a convenience you can use `lav_summary` to get `lavaan`'s summary of the model.
 
 ### Missing data
 
@@ -201,7 +199,7 @@ Missing features/problems
 -   The function does not yet support input data that is already in wide format.
 -   You cannot apply arbitrary functions to variables in the formula like you can with regression models. For instance, a specification like `y ~ scale(x)` will cause an error.
 
-The following `xtdpdml` (Stata) options are missing:
+The following `xtdpdml` (Stata) options are not implemented:
 
 -   xfree
 -   yfree
