@@ -69,6 +69,12 @@
 #' @author Jacob A. Long, in consultation with Richard A. Williams. All errors
 #'  are Jacob's.
 #'
+#' @references
+#'
+#' Allison, P. D., Williams, R., & Moral-Benito, E. (2017). Maximum likelihood
+#' for cross-lagged panel models with fixed effects. *Socius*, *3*, 1–17.
+#' http://journals.sagepub.com/doi/10.1177/2378023117710578
+#'
 #' @export
 #' @rdname clfe
 #' @importFrom lavaan sem lavInspect
@@ -302,11 +308,6 @@ print.summary.clfe <- function(x, ...) {
 #'
 #'   }
 #'
-#' @references
-#'
-#' Allison, P. D., Williams, R., & Moral-Benito, E. (2017). Maximum likelihood
-#' for cross-lagged panel models with fixed effects. *Socius*, *3*, 1–17.
-#' http://journals.sagepub.com/doi/10.1177/2378023117710578
 #'
 #' @examples
 #'
