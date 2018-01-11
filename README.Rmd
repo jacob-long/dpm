@@ -3,7 +3,7 @@ output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Travis-CI Build Status](https://travis-ci.org/jacob-long/clfe.svg?branch=master)](https://travis-ci.org/jacob-long/clfe)
+[![GitHub tag](https://img.shields.io/github/tag/jacob-long/clfe.svg?label=Github)](https://github.com/jacob-long/clfe) [![Travis-CI Build Status](https://travis-ci.org/jacob-long/clfe.svg?branch=master)](https://travis-ci.org/jacob-long/clfe)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jacob-long/clfe?branch=master&svg=true)](https://ci.appveyor.com/project/jacob-long/clfe)
 [![Coverage Status](https://img.shields.io/codecov/c/github/jacob-long/clfe/master.svg)](https://codecov.io/github/jacob-long/clfe?branch=master)
 
