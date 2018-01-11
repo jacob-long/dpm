@@ -31,7 +31,7 @@ Here are the currently supported functions with a brief explantion:
 \examples{
 
 # Load example data
-data("WageData", package = "clfe")
+data("WageData")
 # Convert data to panel_data format for ease of use
 wages <- panel_data(WageData, id = id, wave = t)
 

@@ -87,7 +87,8 @@ The right-hand side of the formula has two parts, separated by a bar
 }
 \examples{
 # Load example data
-data("WageData", package = "clfe")
+library(panelr)
+data("WageData")
 # Convert data to panel_data format for ease of use
 wages <- panel_data(WageData, id = id, wave = t)
 
