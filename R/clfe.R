@@ -75,7 +75,8 @@
 #'
 #' @examples
 #' # Load example data
-#' data("WageData", package = "clfe")
+#' library(panelr)
+#' data("WageData")
 #' # Convert data to panel_data format for ease of use
 #' wages <- panel_data(WageData, id = id, wave = t)
 #'
@@ -92,33 +93,21 @@ clfe <- function(formula, data, id = NULL, wave = NULL,
                 alpha.free = FALSE, last.wave = FALSE,
                 print.only = FALSE, digits = 3, ...) {
 
-  if (class(data)[1] == "panel_data") {
-    id <- attr(data, "id")
-    wave <- attr(data, "wave")
-
-    if (is.null(id)) {
-      id <- names(data)[1]
-    }
-
-    if (is.null(wave)) {
-      wave <- names(data)[2]
-    }
-
-  } else {
+  if (class(data)[1] != "panel_data") {
 
     if (!is.null(substitute(id)) && !is.null(substitute(wave))) {
+
+      if (!("data.frame" %in% class(data))) {
+        stop("data argument must be a data frame.")
+      }
 
       id <- as.character(substitute(id))
       wave <- as.character(substitute(wave))
 
-      data <- panel_data_in(data, id, wave)
+      data <- panelr::panel_data(data, id, wave)
 
     }
 
-  }
-
-  if (!("data.frame" %in% class(data))) {
-    stop("data argument must be a data frame.")
   }
 
   pf <- cl_formula_parser(formula)
@@ -133,7 +122,7 @@ clfe <- function(formula, data, id = NULL, wave = NULL,
   mf <- panel_model_frame(allvars, data)
 
   model <- model_builder(mf = mf, dv = dv, endogs = endogs, exogs = exogs,
-                         constants = constants, id = id, wave = wave,
+                         constants = constants, id = "id", wave = "wave",
                          err.inv = err.inv, const.inv = const.inv,
                          alpha.free = alpha.free,
                          last.wave = last.wave)
@@ -145,8 +134,8 @@ clfe <- function(formula, data, id = NULL, wave = NULL,
 
   s <- lavaan::sem(model = model$model, data = model$data, ...)
 
-  numwaves <- length(unique(mf$data[,wave]))
-  nobs_o <- length(unique(data[,id]))
+  numwaves <- length(unique(mf$data[["wave"]]))
+  nobs_o <- length(unique(data[["id"]]))
   nobs_used <- lavaan::lavInspect(s, what = "ntotal")
 
   pred.labs <- c()
@@ -316,7 +305,7 @@ print.summary.clfe <- function(x, ...) {
 #' @examples
 #'
 #' # Load example data
-#' data("WageData", package = "clfe")
+#' data("WageData")
 #' # Convert data to panel_data format for ease of use
 #' wages <- panel_data(WageData, id = id, wave = t)
 #'

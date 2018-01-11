@@ -100,7 +100,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave, last.wave,
 ###### Model build prep #######################################################
 
   # Save list of waves
-  waves <- unique(d[,wave])
+  waves <- unique(d[["wave"]])
 
   # Creating list of time-varying variables in a list for constructing lavaan
   # model string

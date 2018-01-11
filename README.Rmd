@@ -1,7 +1,5 @@
 ---
-output:
-  md_document:
-    variant: markdown_github
+output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -34,10 +32,12 @@ in the article by Paul Allison, Richard Williams, and Enrique Moral-Benito in
 # Installation
 
 You will need to the `devtools` package installed to install this package
-from Github.
+from Github as well as its companion package,
+[`panelr`](https://github.com/jacob-long/panelr).
 
 ```{r eval = F}
 install.packages("devtools")
+devtools::install_github("jacob-long/panelr")
 devtools::install_github("jacob-long/clfe")
 ```
 
@@ -53,12 +53,14 @@ Better compatibility with wide data will be implemented in a future release.
 Load the package, use built-in wages data.
 
 ```{r message = F}
+library(panelr)
 library(clfe)
-data("WageData", package = "clfe")
+data("WageData")
 ```
 
 This next line of code converts the data to class `panel_data`, which is a class
-specific to this package that helps to simplify the treatment of the long-form
+specific to the [`panelr`](https://github.com/jacob-long/panelr) that helps
+to simplify the treatment of the long-form
 panel data. You don't have to do this, but it saves you from providing 
 `id` and `wave` arguments to the model fitting function each time you use it.
 
