@@ -22,5 +22,6 @@ Imports: lavaan,
 Suggests: knitr,
     rmarkdown,
     covr
+Remotes: jacob-long/panelr
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1.9000
