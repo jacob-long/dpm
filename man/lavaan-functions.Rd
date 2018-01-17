@@ -16,17 +16,16 @@ lav_fitmeasures(x, ...)
 }
 \description{
 These are essentially shortcuts to commonly-desired lavaan
- functions to be used with clfe objects, which contain a lavaan model.
+functions to be used with clfe objects, which contain a lavaan model.
 }
 \details{
 Here are the currently supported functions with a brief explantion:
 
-  \itemize{
+\itemize{\preformatted{\item \code{lav_summary}: lavaan's summary function.
+\item \code{lav_fitmeasures}: lavaan's \code{summary}
+}
 
-    \item \code{lav_summary}: lavaan's summary function.
-    \item \code{lav_fitmeasures}: lavaan's \code{summary}
-
-  }
+}
 }
 \examples{
 

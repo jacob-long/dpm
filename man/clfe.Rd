@@ -46,17 +46,17 @@ could be \code{missing = "fiml"} for missing data or
 \value{
 An object of class "clfe," which has its own \code{summary} method.
 
- The clfe object also returns: \itemize{
+The clfe object also returns: \itemize{
 
- \item \code{fit}, the \code{\link[lavaan]{lavaan}} object fit by this
-  function. This could be useful if you want to use lavaan's functions to
-  further learn from the model
- \item \code{mod_string}, the character object used to specify the model
-  to lavaan. This is helpful if you want to fit the model yourself or
-  wish to check that the specification is correct.
- \item \code{wide_data}, the widened data frame necessary to fit the SEM.
+\item \code{fit}, the \code{\link[lavaan]{lavaan}} object fit by this
+function. This could be useful if you want to use lavaan's functions to
+further learn from the model
+\item \code{mod_string}, the character object used to specify the model
+to lavaan. This is helpful if you want to fit the model yourself or
+wish to check that the specification is correct.
+\item \code{wide_data}, the widened data frame necessary to fit the SEM.
 
- }
+}
 }
 \description{
 Estimate dynamic panel models with fixed effects via
@@ -64,26 +64,26 @@ maximum likelihood estimation.
 }
 \details{
 The right-hand side of the formula has two parts, separated by a bar
- (\code{|}). The first part should include the time-varying predictors.
- The second part, then, is for the time-invariant variables. If you put
- a time-varying variable in the second part of the formula, by default
- the first wave's value of that variable is treated as the constant.
+(\code{|}). The first part should include the time-varying predictors.
+The second part, then, is for the time-invariant variables. If you put
+a time-varying variable in the second part of the formula, by default
+the first wave's value of that variable is treated as the constant.
 
- You must include time-varying predictors. If you do not include a bar
- in the formula, all variables are treated as time-varying.
+You must include time-varying predictors. If you do not include a bar
+in the formula, all variables are treated as time-varying.
 
- \emph{Predetermined variables}:
+\emph{Predetermined variables}:
 
- To set a variable as predetermined, or weakly exogenous, surround the
- variable with a \code{pre} function. For instance, if you want the variable
- \code{union} to be predetermined, you could specify the formula like this:
- \code{wks ~ pre(union) + lwage | ed}, where \code{wks} is the dependent
- variable, \code{lwage} is a strictly exogenous time-varying predictor,
- and \code{ed} is a strictly exogenous time-invariant predictor.
+To set a variable as predetermined, or weakly exogenous, surround the
+variable with a \code{pre} function. For instance, if you want the variable
+\code{union} to be predetermined, you could specify the formula like this:
+\code{wks ~ pre(union) + lwage | ed}, where \code{wks} is the dependent
+variable, \code{lwage} is a strictly exogenous time-varying predictor,
+and \code{ed} is a strictly exogenous time-invariant predictor.
 
- To lag a predictor, surround the variable with a \code{lag} function in
- the same way. Note that the lag function used is specific to this package,
- so it does not work the same way as the built-in lag function.
+To lag a predictor, surround the variable with a \code{lag} function in
+the same way. Note that the lag function used is specific to this package,
+so it does not work the same way as the built-in lag function.
 }
 \examples{
 # Load example data
@@ -102,10 +102,10 @@ summary(fit)
 }
 \references{
 Allison, P. D., Williams, R., & Moral-Benito, E. (2017). Maximum likelihood
-for cross-lagged panel models with fixed effects. *Socius*, *3*, 1–17.
+for cross-lagged panel models with fixed effects. \emph{Socius}, \emph{3}, 1–17.
 http://journals.sagepub.com/doi/10.1177/2378023117710578
 }
 \author{
 Jacob A. Long, in consultation with Richard A. Williams. All errors
- are Jacob's.
+are Jacob's.
 }

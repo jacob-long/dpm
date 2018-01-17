@@ -1,6 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# clfe
+
 [![GitHub
 tag](https://img.shields.io/github/tag/jacob-long/clfe.svg?label=Github)](https://github.com/jacob-long/clfe)
 [![Travis-CI Build
