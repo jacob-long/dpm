@@ -379,4 +379,27 @@ lav_summary <- function(x, ...) {
 
 }
 
+#### extractors ##############################################################
+
+#' @title Retrieve wide-format data from fitted dpm model
+#' @description This helper function provides a simple way to retrieve the
+#'  widened data from a fitted [dpm::dpm()] object.
+#' @param model A `dpm` object.
+#' @export
+get_wide_data <- function(model) {
+  model@wide_data
+}
+
+#' @title Retrieve lavaan model syntax from fitted dpm model
+#' @description This helper function provides a simple way to retrieve the
+#'  lavaan model syntax from a fitted [dpm::dpm()] object.
+#' @param model A `dpm` object.
+#' @param print Print the syntax to the console so it is formatted properly?
+#'  Default is TRUE.
+#' @export
+get_syntax <- function(model, print = TRUE) {
+  if (print) {cat(model@mod_string)}
+  invisible(model@mod_string)
+}
+
 
