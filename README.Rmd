@@ -2,33 +2,32 @@
 output: github_document
 ---
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-# clfe
+# dpm
 
-[![GitHub tag](https://img.shields.io/github/tag/jacob-long/clfe.svg?label=Github)](https://github.com/jacob-long/clfe) [![Travis-CI Build Status](https://travis-ci.org/jacob-long/clfe.svg?branch=master)](https://travis-ci.org/jacob-long/clfe)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jacob-long/clfe?branch=master&svg=true)](https://ci.appveyor.com/project/jacob-long/clfe)
-[![Coverage Status](https://img.shields.io/codecov/c/github/jacob-long/clfe/master.svg)](https://codecov.io/github/jacob-long/clfe?branch=master)
+[![GitHub tag](https://img.shields.io/github/tag/jacob-long/dpm.svg?label=Github)](https://github.com/jacob-long/dpm) [![Travis-CI Build Status](https://travis-ci.org/jacob-long/dpm.svg?branch=master)](https://travis-ci.org/jacob-long/dpm)
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jacob-long/dpm?branch=master&svg=true)](https://ci.appveyor.com/project/jacob-long/dpm)
+[![Coverage Status](https://img.shields.io/codecov/c/github/jacob-long/dpm/master.svg)](https://codecov.io/github/jacob-long/dpm?branch=master)
 
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = F,
-  comment = "#",
+  comment = "",
   fig.path = "README-"
 )
 ```
 
 This R package implements the cross-lagged panel model with fixed effects
-described by Allison, Williams, and Moral-Benito (2017). It is effectively
-a convenience wrapper to the `lavaan` package. This package will reshape your
-data, specify the model properly, and fit it with `lavaan`.
+described by Allison, Williams, and Moral-Benito (2017). This package will 
+reshape your data, specify the model properly, and fit it with `lavaan`.
 
-Note: This is ALPHA software. Expect bugs and missing functionality.
-Cross-reference all results with xtdpdml for Stata. Go to
+Note: This is BETA software. Expect bugs and missing functionality.
+It is best to cross-reference all results with xtdpdml for Stata. Go to
 [https://www3.nd.edu/~rwilliam/dynamic/](https://www3.nd.edu/~rwilliam/dynamic/)
 to learn about xtdpdml and the underlying method. You may also be interested
 in the article by Paul Allison, Richard Williams, and Enrique Moral-Benito in
 **Socius**, accessible
-[here](http://journals.sagepub.com/doi/full/10.1177/2378023117710578)
+[here](http://journals.sagepub.com/doi/full/10.1177/2378023117710578).
 
 # Installation
 
@@ -39,29 +38,32 @@ from Github as well as its companion package,
 ```{r eval = F}
 install.packages("devtools")
 devtools::install_github("jacob-long/panelr")
-devtools::install_github("jacob-long/clfe")
+devtools::install_github("jacob-long/dpm")
 ```
 
-Also note this package's dependencies: `lavaan`, `stringr`
+Also note this package's other dependencies: `lavaan`, `stringr`, `rlang`, and
+`crayon`, in addition to the dependencies of `panelr` and the aforementioned
+packages.
 
 # Usage
 
 This package assumes your data are in *long* format, with each row representing
 a single observation of a single participant. Contrast this with *wide* format
 in which each row contains all observations of a single participant. 
-Better compatibility with wide data will be implemented in a future release.
+Better compatibility with wide data will be implemented in a future release,
+but in the meantime you may use the `long_panel` function implemented in 
+`panelr` to reshape to long format in a relatively pain-free way.
 
-Load the package, use built-in wages data.
+First we load the package and the `WageData` from `panelr`.
 
 ```{r message = F}
-library(panelr)
-library(clfe)
-data("WageData")
+library(dpm)
+data("WageData", package = "panelr")
 ```
 
-This next line of code converts the data to class `panel_data`, which is a class
-specific to the [`panelr`](https://github.com/jacob-long/panelr) that helps
-to simplify the treatment of the long-form
+This next line of code converts the data to class `panel_data`, which is a
+class specific to the [`panelr`](https://github.com/jacob-long/panelr) that
+helps to simplify the treatment of the long-form
 panel data. You don't have to do this, but it saves you from providing 
 `id` and `wave` arguments to the model fitting function each time you use it.
 
@@ -102,9 +104,8 @@ Note that to get matching standard errors, set `information = "observed"` to
 override `lavaan`'s default, `information = "expected"`.
 
 ```{r}
-fit <- clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
-           err.inv = TRUE,
-           information = "observed")
+fit <- dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
+           err.inv = TRUE, information = "observed")
 summary(fit)
 ```
 
@@ -116,11 +117,12 @@ Any arguments supplied other than those that are documented within the
 ### Lavaan syntax only
 
 If you just want the `lavaan` model specification and don't want this package
-to fit the model for you, you can set `print.only = TRUE`.
+to fit the model for you, you can set `print.only = TRUE`. To reduce the
+amount of output, I'm condensing `wages` to 4 waves here.
 
 ```{r}
-clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages, err.inv = TRUE,
-     print.only = TRUE)
+dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages[wages$t < 5,],
+    print.only = TRUE)
 ```
 
 ### Extract components
@@ -129,19 +131,21 @@ Alternately, you can extract the `lavaan` model syntax and wide-formatted data
 from the fitted model object to do your own fitting.
 
 ```{r}
-head(fit$wide_data)
+head(fit@wide_data)
 ```
 
-The `lavaan` model specification is stored as `fit$mod_string`. Tip: To print
-the `mod_string` to your console, don't use the `print` function, use the 
-`cat` function because it will format the line breaks appropriately.
+The model is a special type of `lavaan` object. This means most methods 
+implemented for `lavaan` objects will work on these. You can also convert
+the fitted model into a typical `lavaan` object:
 
-You can also get the fitted `lavaan` model object at `fit$fit`.
+```{r eval = FALSE}
+as(fit, "lavaan")
+```
 
 ### Get full `lavaan` summary
 
-While you could extract the `lavaan` model and apply any of `lavaan`'s 
-functions to it (and you should!), as a convenience you can use 
+While you could convert the model to `lavaan` model and apply any of
+`lavaan`'s  functions to it (and you should!), as a convenience you can use 
 `lav_summary` to get `lavaan`'s summary of the model.
 
 ### Missing data
@@ -154,7 +158,8 @@ Take advantage of `lavaan`'s missing data handling by using the
 * CFI/TLI fit measures are much different than Stata's and consistently
 more optimistic. For now, they are not printed with the summary because they
 are probably misleading.
-* You cannot use multiple lags of the same predictor (e.g., `y ~ x + lag(x)`).
+* ~~You cannot use multiple lags of the same predictor (e.g.,
+`y ~ x + lag(x)`).~~ (Fixed in `1.0.0`)
 * The function does not yet support input data that is already in wide format.
 * You cannot apply arbitrary functions to variables in the formula like you 
 can with regression models. For instance, a specification like `y ~ scale(x)`
@@ -163,10 +168,17 @@ will cause an error.
 The following `xtdpdml` (Stata) options are not implemented:
 
 * xfree
-* yfree
-* re
-* ylag
-* std
+* ~~yfree~~ (added as `y.free` argument in `1.0.0`)
+* ~~re~~ (added as `fixed.effects` argument in `1.0.0`)
+* ~~ylag~~ (added as `y.lag` argument in `1.0.0`)
+* std (but `standardize` argument of `summary` may suffice)
+
+## Roadmap
+
+* Get proper CFI/TLI statistics
+* Allow full use of formula syntax, e.g. `y ~ scale(x)`
+* Create a `predict` method and perhaps some ability to plot predictions
+* Add `broom` methods (`tidy`, `glance`)
 
 # Reference
 

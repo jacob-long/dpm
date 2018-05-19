@@ -1,25 +1,24 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# clfe
+# dpm
 
 [![GitHub
-tag](https://img.shields.io/github/tag/jacob-long/clfe.svg?label=Github)](https://github.com/jacob-long/clfe)
+tag](https://img.shields.io/github/tag/jacob-long/dpm.svg?label=Github)](https://github.com/jacob-long/dpm)
 [![Travis-CI Build
-Status](https://travis-ci.org/jacob-long/clfe.svg?branch=master)](https://travis-ci.org/jacob-long/clfe)
+Status](https://travis-ci.org/jacob-long/dpm.svg?branch=master)](https://travis-ci.org/jacob-long/dpm)
 [![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/jacob-long/clfe?branch=master&svg=true)](https://ci.appveyor.com/project/jacob-long/clfe)
+Status](https://ci.appveyor.com/api/projects/status/github/jacob-long/dpm?branch=master&svg=true)](https://ci.appveyor.com/project/jacob-long/dpm)
 [![Coverage
-Status](https://img.shields.io/codecov/c/github/jacob-long/clfe/master.svg)](https://codecov.io/github/jacob-long/clfe?branch=master)
+Status](https://img.shields.io/codecov/c/github/jacob-long/dpm/master.svg)](https://codecov.io/github/jacob-long/dpm?branch=master)
 
 This R package implements the cross-lagged panel model with fixed
-effects described by Allison, Williams, and Moral-Benito (2017). It is
-effectively a convenience wrapper to the `lavaan` package. This package
-will reshape your data, specify the model properly, and fit it with
-`lavaan`.
+effects described by Allison, Williams, and Moral-Benito (2017). This
+package will reshape your data, specify the model properly, and fit it
+with `lavaan`.
 
-Note: This is ALPHA software. Expect bugs and missing functionality.
-Cross-reference all results with xtdpdml for Stata. Go to
+Note: This is BETA software. Expect bugs and missing functionality. It
+is best to cross-reference all results with xtdpdml for Stata. Go to
 <https://www3.nd.edu/~rwilliam/dynamic/> to learn about xtdpdml and the
 underlying method. You may also be interested in the article by Paul
 Allison, Richard Williams, and Enrique Moral-Benito in **Socius**,
@@ -35,10 +34,12 @@ package from Github as well as its companion package,
 ``` r
 install.packages("devtools")
 devtools::install_github("jacob-long/panelr")
-devtools::install_github("jacob-long/clfe")
+devtools::install_github("jacob-long/dpm")
 ```
 
-Also note this package’s dependencies: `lavaan`, `stringr`
+Also note this package’s other dependencies: `lavaan`, `stringr`,
+`rlang`, and `crayon`, in addition to the dependencies of `panelr` and
+the aforementioned packages.
 
 # Usage
 
@@ -46,14 +47,15 @@ This package assumes your data are in *long* format, with each row
 representing a single observation of a single participant. Contrast this
 with *wide* format in which each row contains all observations of a
 single participant. Better compatibility with wide data will be
-implemented in a future release.
+implemented in a future release, but in the meantime you may use the
+`long_panel` function implemented in `panelr` to reshape to long format
+in a relatively pain-free way.
 
-Load the package, use built-in wages data.
+First we load the package and the `WageData` from `panelr`.
 
 ``` r
-library(panelr)
-library(clfe)
-data("WageData")
+library(dpm)
+data("WageData", package = "panelr")
 ```
 
 This next line of code converts the data to class `panel_data`, which is
@@ -100,31 +102,30 @@ Note that to get matching standard errors, set `information =
 "observed"` to override `lavaan`’s default, `information = "expected"`.
 
 ``` r
-fit <- clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
-           err.inv = TRUE,
-           information = "observed")
+fit <- dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
+           err.inv = TRUE, information = "observed")
 summary(fit)
 ```
 
-    # MODEL INFO
+    # MODEL INFO:
     # Dependent variable: wks 
-    # Total observations: 
+    # Total observations: 595 
     # Complete observations: 595 
     # Time periods: 2 - 7 
     # 
-    # MODEL FIT
-    # Chi-squared (76) = 138.476
+    # MODEL FIT:
+    # 𝛘²(76) = 138.476
     # RMSEA = 0.037, 90% CI [0.027, 0.047]
     # p(RMSEA < .05) = 0.986
-    # SRMR = 0.027 
+    # SRMR = 0.025 
     # 
-    #               Est.   S.E.  z-value p        
-    # union (t - 1) -1.206 0.522 -2.309  0.021 *  
-    # lwage (t - 1) 0.588  0.488 1.204   0.229    
-    # ed            -0.107 0.056 -1.893  0.058 .  
-    # wks (t - 1)   0.188  0.02  9.586   0     ***
+    #                 Est.  S.E. z val.     p    
+    # union (t - 1) -1.206 0.522 -2.309 0.021   *
+    # lwage (t - 1)  0.588 0.488  1.204 0.229    
+    # ed            -0.107 0.056 -1.893 0.058   .
+    # wks (t - 1)    0.188 0.020  9.586 0.000 ***
     # 
-    # Model converged after 579 iterations
+    # Model converged after 613 iterations
 
 Any arguments supplied other than those that are documented within the
 `clfe` function are passed on to `sem` from `lavaan`.
@@ -134,72 +135,57 @@ Any arguments supplied other than those that are documented within the
 ### Lavaan syntax only
 
 If you just want the `lavaan` model specification and don’t want this
-package to fit the model for you, you can set `print.only =
-TRUE`.
+package to fit the model for you, you can set `print.only = TRUE`. To
+reduce the amount of output, I’m condensing `wages` to 4 waves here.
 
 ``` r
-clfe(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages, err.inv = TRUE,
-     print.only = TRUE)
+dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages[wages$t < 5,],
+    print.only = TRUE)
 ```
 
     # ## Main regressions
     # 
-    # wks_2 ~ en1*union_1 + ex1*lwage_1 + c1*ed + p*wks_1
-    # wks_3 ~ en1*union_2 + ex1*lwage_2 + c1*ed + p*wks_2
-    # wks_4 ~ en1*union_3 + ex1*lwage_3 + c1*ed + p*wks_3
-    # wks_5 ~ en1*union_4 + ex1*lwage_4 + c1*ed + p*wks_4
-    # wks_6 ~ en1*union_5 + ex1*lwage_5 + c1*ed + p*wks_5
-    # wks_7 ~ en1*union_6 + ex1*lwage_6 + c1*ed + p*wks_6
+    # wks_2 ~ en1 * union_1 + ex1 * lwage_1 + c1 * ed + p1 * wks_1
+    # wks_3 ~ en1 * union_2 + ex1 * lwage_2 + c1 * ed + p1 * wks_2
+    # wks_4 ~ en1 * union_3 + ex1 * lwage_3 + c1 * ed + p1 * wks_3
     # 
-    # ## Alpha latent variable (fixed effects)
+    # ## Alpha latent variable (random intercept)
     # 
-    # alpha =~ 1*wks_2 + 1*wks_3 + 1*wks_4 + 1*wks_5 + 1*wks_6 + 1*wks_7
+    # alpha =~ 1 * wks_2 + 1 * wks_3 + 1 * wks_4
     # 
-    # ## Alpha regression (fixed effects)
+    # ## Alpha free to covary with observed variables (fixed effects)
     # 
-    # alpha ~~ union_1 + union_2 + union_3 + union_4 + union_5 + union_6 + lwage_1 + lwage_2 + lwage_3 + lwage_4 + lwage_5 + lwage_6 + wks_1
+    # alpha ~~  union_1 +  union_2 +  union_3 +  lwage_1 +  lwage_2 +  lwage_3 +  wks_1
     # 
     # ## Correlating DV errors with future values of predetermined predictors
     # 
-    # wks_5 ~~ union_6
-    # wks_4 ~~ union_5 + union_6
-    # wks_3 ~~ union_4 + union_5 + union_6
-    # wks_2 ~~ union_3 + union_4 + union_5 + union_6
+    # wks_2 ~~ union_3
     # 
     # ## Predetermined predictors covariances
     # 
-    # union_1 ~~ lwage_1 + lwage_2 + lwage_3 + lwage_4 + lwage_5 + lwage_6 + ed + wks_1 
+    # union_1 ~~ ed + lwage_1 + lwage_2 + lwage_3 + wks_1
+    # union_2 ~~ ed + lwage_1 + lwage_2 + lwage_3 + union_1 + wks_1
+    # union_3 ~~ ed + lwage_1 + lwage_2 + lwage_3 + union_1 + union_2 + wks_1
     # 
-    # union_2 ~~ union_1 + lwage_1 + lwage_2 + lwage_3 + lwage_4 + lwage_5 + lwage_6 + ed + wks_1 
-    # 
-    # union_3 ~~ union_2 + union_1 + lwage_1 + lwage_2 + lwage_3 + lwage_4 + lwage_5 + lwage_6 + ed + wks_1 
-    # 
-    # union_4 ~~ union_3 + union_2 + union_1 + lwage_1 + lwage_2 + lwage_3 + lwage_4 + lwage_5 + lwage_6 + ed + wks_1 
-    # 
-    # union_5 ~~ union_4 + union_3 + union_2 + union_1 + lwage_1 + lwage_2 + lwage_3 + lwage_4 + lwage_5 + lwage_6 + ed + wks_1 
-    # 
-    # union_6 ~~ union_5 + union_4 + union_3 + union_2 + union_1 + lwage_1 + lwage_2 + lwage_3 + lwage_4 + lwage_5 + lwage_6 + ed + wks_1 
-    # 
-    # 
-    # ## Exogenous (varying and invariant) predictors covariances
+    # ## Exogenous (time varying and invariant) predictors covariances
     # 
     # lwage_1 ~~ ed + wks_1
-    # lwage_2 ~~ lwage_1 + ed + wks_1
-    # lwage_3 ~~ lwage_2 + lwage_1 + ed + wks_1
-    # lwage_4 ~~ lwage_3 + lwage_2 + lwage_1 + ed + wks_1
-    # lwage_5 ~~ lwage_4 + lwage_3 + lwage_2 + lwage_1 + ed + wks_1
-    # lwage_6 ~~ lwage_5 + lwage_4 + lwage_3 + lwage_2 + lwage_1 + ed + wks_1
+    # lwage_2 ~~ ed + lwage_1 + wks_1
+    # lwage_3 ~~ ed + lwage_1 + lwage_2 + wks_1
     # 
     # ed ~~ wks_1
     # 
-    # ## Holding DV error variance constant for each wave (optional)
+    # ## DV error variance free to vary across waves
     # 
-    # wks_2 ~~ v*wks_2
-    # wks_3 ~~ v*wks_3
-    # wks_4 ~~ v*wks_4
-    # wks_5 ~~ v*wks_5
-    # wks_6 ~~ v*wks_6
-    # wks_7 ~~ v*wks_7
+    # wks_2 ~~ wks_2
+    # wks_3 ~~ wks_3
+    # wks_4 ~~ wks_4
+    # 
+    # ## Let DV variance vary across waves
+    # 
+    # wks_2 ~ 1
+    # wks_3 ~ 1
+    # wks_4 ~ 1
 
 ### Extract components
 
@@ -208,7 +194,7 @@ wide-formatted data from the fitted model object to do your own
     fitting.
 
 ``` r
-head(fit$wide_data)
+head(fit@wide_data)
 ```
 
     #    ed id union_1 wks_1 lwage_1 union_2 wks_2 lwage_2 union_3 wks_3 lwage_3
@@ -233,18 +219,19 @@ head(fit$wide_data)
     # 29       0    49 7.29574
     # 36       0    47 7.33889
 
-The `lavaan` model specification is stored as `fit$mod_string`. Tip: To
-print the `mod_string` to your console, don’t use the `print` function,
-use the `cat` function because it will format the line breaks
-appropriately.
+The model is a special type of `lavaan` object. This means most methods
+implemented for `lavaan` objects will work on these. You can also
+convert the fitted model into a typical `lavaan` object:
 
-You can also get the fitted `lavaan` model object at `fit$fit`.
+``` r
+as(fit, "lavaan")
+```
 
 ### Get full `lavaan` summary
 
-While you could extract the `lavaan` model and apply any of `lavaan`’s
-functions to it (and you should\!), as a convenience you can use
-`lav_summary` to get `lavaan`’s summary of the model.
+While you could convert the model to `lavaan` model and apply any of
+`lavaan`’s functions to it (and you should\!), as a convenience you can
+use `lav_summary` to get `lavaan`’s summary of the model.
 
 ### Missing data
 
@@ -256,8 +243,8 @@ Take advantage of `lavaan`’s missing data handling by using the `missing
   - CFI/TLI fit measures are much different than Stata’s and
     consistently more optimistic. For now, they are not printed with the
     summary because they are probably misleading.
-  - You cannot use multiple lags of the same predictor (e.g., `y ~ x +
-    lag(x)`).
+  - ~~You cannot use multiple lags of the same predictor (e.g., `y ~ x +
+    lag(x)`).~~ (Fixed in `1.0.0`)
   - The function does not yet support input data that is already in wide
     format.
   - You cannot apply arbitrary functions to variables in the formula
@@ -267,10 +254,18 @@ Take advantage of `lavaan`’s missing data handling by using the `missing
 The following `xtdpdml` (Stata) options are not implemented:
 
   - xfree
-  - yfree
-  - re
-  - ylag
-  - std
+  - ~~yfree~~ (added as `y.free` argument in `1.0.0`)
+  - ~~re~~ (added as `fixed.effects` argument in `1.0.0`)
+  - ~~ylag~~ (added as `y.lag` argument in `1.0.0`)
+  - std (but `standardize` argument of `summary` may suffice)
+
+## Roadmap
+
+  - Get proper CFI/TLI statistics
+  - Allow full use of formula syntax, e.g. `y ~ scale(x)`
+  - Create a `predict` method and perhaps some ability to plot
+    predictions
+  - Add `broom` methods (`tidy`, `glance`)
 
 # Reference
 

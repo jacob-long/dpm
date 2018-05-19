@@ -24,15 +24,15 @@ panel_model_frame <- function(vars, data) {
 
 lag_frame <- function(data, lags_matches, og_terms, vars) {
 
-  id <- attr(data, "id")
-  if (is.null(id)) {
-    id <- names(data)[1]
-  }
+  id <- panelr::get_id(data)
+  # if (is.null(id)) {
+  #   id <- names(data)[1]
+  # }
 
-  wave <- attr(data, "wave")
-  if (is.null(wave)) {
-    wave <- names(data)[2]
-  }
+  wave <- panelr::get_wave(data)
+  # if (is.null(wave)) {
+  #   wave <- names(data)[2]
+  # }
 
   lags_vars <- regmatches(m = lags_matches, x = og_terms)
   lags_vars <- unlist(lags_vars)
@@ -141,42 +141,4 @@ lag_frame <- function(data, lags_matches, og_terms, vars) {
   return(out)
 
 }
-
-concat <- function(input) {
-
-  input <- unlist(input)
-
-  if (length(input) > 1) {
-
-    for (i in 2:length(input)) {
-
-      input[i] <- paste(input[i - 1], input[i], sep = "\n")
-
-    }
-
-  }
-
-  return(input[length(input)])
-
-}
-
-concat2 <- function(input) {
-
-  input <- unlist(input)
-
-  if (length(input) > 1) {
-
-    for (i in 2:length(input)) {
-
-      input[i] <- paste(input[i - 1], input[i], sep = "\n\n")
-
-    }
-
-  }
-
-  return(input[length(input)])
-
-}
-
-
 
