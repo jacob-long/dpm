@@ -23,7 +23,7 @@ is best to cross-reference all results with xtdpdml for Stata. Go to
 underlying method. You may also be interested in the article by Paul
 Allison, Richard Williams, and Enrique Moral-Benito in **Socius**,
 accessible
-[here](http://journals.sagepub.com/doi/full/10.1177/2378023117710578)
+[here](http://journals.sagepub.com/doi/full/10.1177/2378023117710578).
 
 # Installation
 
@@ -107,28 +107,67 @@ fit <- dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
 summary(fit)
 ```
 
-    # MODEL INFO:
-    # Dependent variable: wks 
-    # Total observations: 595 
-    # Complete observations: 595 
-    # Time periods: 2 - 7 
-    # 
-    # MODEL FIT:
-    # 𝛘²(76) = 138.476
-    # RMSEA = 0.037, 90% CI [0.027, 0.047]
-    # p(RMSEA < .05) = 0.986
-    # SRMR = 0.025 
-    # 
-    #                 Est.  S.E. z val.     p    
-    # union (t - 1) -1.206 0.522 -2.309 0.021   *
-    # lwage (t - 1)  0.588 0.488  1.204 0.229    
-    # ed            -0.107 0.056 -1.893 0.058   .
-    # wks (t - 1)    0.188 0.020  9.586 0.000 ***
-    # 
-    # Model converged after 613 iterations
+    MODEL INFO:
+    Dependent variable: wks 
+    Total observations: 595 
+    Complete observations: 595 
+    Time periods: 2 - 7 
+    
+    MODEL FIT:
+    𝛘²(76) = 138.476
+    RMSEA = 0.037, 90% CI [0.027, 0.047]
+    p(RMSEA < .05) = 0.986
+    SRMR = 0.025 
+    
+                    Est.  S.E. z val.     p    
+    union (t - 1) -1.206 0.522 -2.309 0.021   *
+    lwage (t - 1)  0.588 0.488  1.204 0.229    
+    ed            -0.107 0.056 -1.893 0.058   .
+    wks (t - 1)    0.188 0.020  9.586 0.000 ***
+    
+    Model converged after 613 iterations
 
 Any arguments supplied other than those that are documented within the
-`clfe` function are passed on to `sem` from `lavaan`.
+`dpm` function are passed on to `sem` from the `lavaan` package.
+
+## Model specification options
+
+The following arguments allow you to make changes to the default model
+specification:
+
+  - `y.lag`: By default the lag 1 value of the DV is included as a
+    predictor (this is why they are dynamic models). You may choose a
+    different value or multiple values instead, though you may not
+    choose 0 or NULL (i.e., you must have *some* lagged DV).
+  - `fixed.effects`: By default, the model is specified as a fixed
+    effects model. If you set this to FALSE, you get a random effects
+    specification instead.
+  - `error.inv`: This constrains error variances to be equal in each
+    wave. It is FALSE by default.
+  - `const.inv`: This constrains the constants to be equal in each wave.
+    It is FALSE by default, but if TRUE it eliminates cross-sectional
+    dependence.
+  - `y.free`: This allows the regression coefficent of the lagged DV to
+    vary across time. It is FALSE by default and you can either set it
+    to TRUE or to the specific lag number(s).
+  - `alpha.free`: If TRUE, relaxes the constraint that the fixed effects
+    are equal across time. Default is FALSE to be consistent with how
+    fixed effects models normally work.
+
+## Summary options
+
+You have most of the options available to you via `lavaan`’s summary
+method.
+
+You can choose to omit any of: the *z* statistics (`zstat = FALSE`), the
+standard errors (`se = FALSE`), or the p values (`pvalue = FALSE`). You
+may also add confidence intervals (`ci = TRUE`) at any specified level
+(`ci.level = .95`). If you used bootstrapping for uncertainty intervals,
+you can also specify the method (`boot.ci.type = "perc"`).
+
+The number of digits to print can be set via `digits` or with the option
+`dpm-digits`. You may also standardize coefficients via `lavaan`’s
+method using `standardize = TRUE`.
 
 ## Other features
 
@@ -143,81 +182,60 @@ dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages[wages$t < 5,],
     print.only = TRUE)
 ```
 
-    # ## Main regressions
-    # 
-    # wks_2 ~ en1 * union_1 + ex1 * lwage_1 + c1 * ed + p1 * wks_1
-    # wks_3 ~ en1 * union_2 + ex1 * lwage_2 + c1 * ed + p1 * wks_2
-    # wks_4 ~ en1 * union_3 + ex1 * lwage_3 + c1 * ed + p1 * wks_3
-    # 
-    # ## Alpha latent variable (random intercept)
-    # 
-    # alpha =~ 1 * wks_2 + 1 * wks_3 + 1 * wks_4
-    # 
-    # ## Alpha free to covary with observed variables (fixed effects)
-    # 
-    # alpha ~~  union_1 +  union_2 +  union_3 +  lwage_1 +  lwage_2 +  lwage_3 +  wks_1
-    # 
-    # ## Correlating DV errors with future values of predetermined predictors
-    # 
-    # wks_2 ~~ union_3
-    # 
-    # ## Predetermined predictors covariances
-    # 
-    # union_1 ~~ ed + lwage_1 + lwage_2 + lwage_3 + wks_1
-    # union_2 ~~ ed + lwage_1 + lwage_2 + lwage_3 + union_1 + wks_1
-    # union_3 ~~ ed + lwage_1 + lwage_2 + lwage_3 + union_1 + union_2 + wks_1
-    # 
-    # ## Exogenous (time varying and invariant) predictors covariances
-    # 
-    # lwage_1 ~~ ed + wks_1
-    # lwage_2 ~~ ed + lwage_1 + wks_1
-    # lwage_3 ~~ ed + lwage_1 + lwage_2 + wks_1
-    # 
-    # ed ~~ wks_1
-    # 
-    # ## DV error variance free to vary across waves
-    # 
-    # wks_2 ~~ wks_2
-    # wks_3 ~~ wks_3
-    # wks_4 ~~ wks_4
-    # 
-    # ## Let DV variance vary across waves
-    # 
-    # wks_2 ~ 1
-    # wks_3 ~ 1
-    # wks_4 ~ 1
+    ## Main regressions
+    
+    wks_2 ~ en1 * union_1 + ex1 * lwage_1 + c1 * ed + p1 * wks_1
+    wks_3 ~ en1 * union_2 + ex1 * lwage_2 + c1 * ed + p1 * wks_2
+    wks_4 ~ en1 * union_3 + ex1 * lwage_3 + c1 * ed + p1 * wks_3
+    
+    ## Alpha latent variable (random intercept)
+    
+    alpha =~ 1 * wks_2 + 1 * wks_3 + 1 * wks_4
+    
+    ## Alpha free to covary with observed variables (fixed effects)
+    
+    alpha ~~  union_1 +  union_2 +  union_3 +  lwage_1 +  lwage_2 +  lwage_3 +  wks_1
+    
+    ## Correlating DV errors with future values of predetermined predictors
+    
+    wks_2 ~~ union_3
+    
+    ## Predetermined predictors covariances
+    
+    union_1 ~~ ed + lwage_1 + lwage_2 + lwage_3 + wks_1
+    union_2 ~~ ed + lwage_1 + lwage_2 + lwage_3 + union_1 + wks_1
+    union_3 ~~ ed + lwage_1 + lwage_2 + lwage_3 + union_1 + union_2 + wks_1
+    
+    ## Exogenous (time varying and invariant) predictors covariances
+    
+    lwage_1 ~~ ed + wks_1
+    lwage_2 ~~ ed + lwage_1 + wks_1
+    lwage_3 ~~ ed + lwage_1 + lwage_2 + wks_1
+    
+    ed ~~ wks_1
+    
+    ## DV error variance free to vary across waves
+    
+    wks_2 ~~ wks_2
+    wks_3 ~~ wks_3
+    wks_4 ~~ wks_4
+    
+    ## Let DV variance vary across waves
+    
+    wks_2 ~ 1
+    wks_3 ~ 1
+    wks_4 ~ 1
 
 ### Extract components
 
 Alternately, you can extract the `lavaan` model syntax and
-wide-formatted data from the fitted model object to do your own
-    fitting.
+wide-formatted data from the fitted model object to do your own fitting
+and tweaking.
 
 ``` r
-head(fit@wide_data)
+get_wide_data(fit)
+get_syntax(fit)
 ```
-
-    #    ed id union_1 wks_1 lwage_1 union_2 wks_2 lwage_2 union_3 wks_3 lwage_3
-    # 1   9  1       0    32 5.56068       0    43 5.72031       0    40 5.99645
-    # 8  11  2       0    34 6.16331       0    27 6.21461       1    33 6.26340
-    # 15 12  3       1    50 5.65249       1    51 6.43615       1    50 6.54822
-    # 22 10  4       0    52 6.15698       0    46 6.23832       0    46 6.30079
-    # 29 16  5       1    50 6.43775       1    46 6.62007       1    40 6.63332
-    # 36 12  6       0    44 6.90575       0    47 6.90575       0    47 6.90776
-    #    union_4 wks_4 lwage_4 union_5 wks_5 lwage_5 union_6 wks_6 lwage_6
-    # 1        0    39 5.99645       0    42 6.06146       0    35 6.17379
-    # 8        0    30 6.54391       0    30 6.69703       0    37 6.79122
-    # 15       1    52 6.60259       1    52 6.69580       1    52 6.77878
-    # 22       0    49 6.35957       0    44 6.46925       0    52 6.56244
-    # 29       0    50 6.98286       0    47 7.04752       0    47 7.31322
-    # 36       0    47 7.00307       0    44 7.06902       0    45 7.52023
-    #    union_7 wks_7 lwage_7
-    # 1        0    32 6.24417
-    # 8        0    30 6.81564
-    # 15       1    46 6.86066
-    # 22       0    46 6.62141
-    # 29       0    49 7.29574
-    # 36       0    47 7.33889
 
 The model is a special type of `lavaan` object. This means most methods
 implemented for `lavaan` objects will work on these. You can also
@@ -236,7 +254,8 @@ use `lav_summary` to get `lavaan`’s summary of the model.
 ### Missing data
 
 Take advantage of `lavaan`’s missing data handling by using the `missing
-= "fiml"` argument, which is passed to `sem`.
+= "fiml"` argument as well as any other arguments accepted by
+`lavaan::sem()`.
 
 # Missing features/problems
 

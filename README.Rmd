@@ -110,7 +110,43 @@ summary(fit)
 ```
 
 Any arguments supplied other than those that are documented within the 
-`clfe` function are passed on to `sem` from `lavaan`.
+`dpm` function are passed on to `sem` from the `lavaan` package.
+
+## Model specification options
+
+The following arguments allow you to make changes to the default model
+specification:
+
+* `y.lag`: By default the lag 1 value of the DV is included as a predictor 
+(this is why they are dynamic models). You may choose a different value or
+multiple values instead, though you may not choose 0 or NULL (i.e., you 
+must have *some* lagged DV).
+* `fixed.effects`: By default, the model is specified as a fixed effects model.
+If you set this to FALSE, you get a random effects specification instead.
+* `error.inv`: This constrains error variances to be equal in each wave. It 
+is FALSE by default.
+* `const.inv`: This constrains the constants to be equal in each wave. 
+It is FALSE by default, but if TRUE it eliminates cross-sectional dependence.
+* `y.free`: This allows the regression coefficent of the lagged DV to vary
+across time. It is FALSE by default and you can either set it to TRUE or
+to the specific lag number(s).
+* `alpha.free`: If TRUE, relaxes the constraint that the fixed effects are 
+equal across time. Default is FALSE to be consistent with how fixed effects
+models normally work.
+
+## Summary options
+
+You have most of the options available to you via `lavaan`'s summary method.
+
+You can choose to omit any of: the *z* statistics (`zstat = FALSE`),
+the standard errors (`se = FALSE`), or the p values (`pvalue = FALSE`). You
+may also add confidence intervals (`ci = TRUE`) at any specified level 
+(`ci.level = .95`). If you used bootstrapping for uncertainty intervals,
+you can also specify the method (`boot.ci.type = "perc"`).
+
+The number of digits to print can be set via `digits` or with the option
+`dpm-digits`. You may also standardize coefficients via `lavaan`'s method
+using `standardize = TRUE`.
 
 ## Other features
 
@@ -127,11 +163,12 @@ dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages[wages$t < 5,],
 
 ### Extract components
 
-Alternately, you can extract the `lavaan` model syntax and wide-formatted data
-from the fitted model object to do your own fitting.
+Alternately, you can extract the `lavaan` model syntax and wide-formatted
+data from the fitted model object to do your own fitting and tweaking.
 
-```{r}
-head(fit@wide_data)
+```{r eval = FALSE}
+get_wide_data(fit)
+get_syntax(fit)
 ```
 
 The model is a special type of `lavaan` object. This means most methods 
@@ -151,7 +188,8 @@ While you could convert the model to `lavaan` model and apply any of
 ### Missing data
 
 Take advantage of `lavaan`'s missing data handling by using the
-`missing = "fiml"` argument, which is passed to `sem`.
+`missing = "fiml"` argument as well as any other arguments accepted by 
+`lavaan::sem()`.
 
 # Missing features/problems
 
