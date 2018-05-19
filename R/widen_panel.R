@@ -1,13 +1,15 @@
 #' @importFrom stats complete.cases reshape
 
-widen_panel <- function(data, varying, constants) {
+widen_panel_in <- function(data, varying, constants) {
+
+  id <- panelr::get_id(data)
+  wave <- panelr::get_wave(data)
+  data <-
+    as.data.frame(data[names(data) %in% c(id, wave, varying, constants)])
 
   data <-
-    as.data.frame(data[names(data) %in% c("id", "wave", varying, constants)])
-
-  data <-
-    suppressWarnings(reshape(data = data, v.names = varying, timevar = "wave",
-                  idvar = "id", direction = "wide", sep = "_"))
+    suppressWarnings(reshape(data = data, v.names = varying, timevar = wave,
+                  idvar = id, direction = "wide", sep = "_"))
 
   complete_obs <- sum(complete.cases(data))
   attr(data, "complete_obs") <- complete_obs
