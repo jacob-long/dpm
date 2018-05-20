@@ -1,9 +1,9 @@
 template:
   params:
-    bootswatch: readable
+    bootswatch: cosmo
 
 navbar:
-#  type: inverse
+  type: inverse
   left:
     - icon: fa-home
       href: index.html
@@ -23,4 +23,4 @@ navbar:
   right:
     - icon: fa-github fa-lg
       text: "Github"
-      href: https://github.com/jacob-long/clfe
+      href: https://github.com/jacob-long/dpm

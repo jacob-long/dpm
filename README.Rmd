@@ -17,12 +17,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-This R package implements the cross-lagged panel model with fixed effects
-described by Allison, Williams, and Moral-Benito (2017). This package will 
-reshape your data, specify the model properly, and fit it with `lavaan`.
+This R package implements the dynamic panel data modeling framework
+described by Allison, Williams, and Moral-Benito (2017). This approach allows
+fitting models with fixed effects that do not assume strict exogeneity of
+predictors. That means you can simultaneously get the robustness to confounding
+offered by fixed effects models and account for reciprocal causation between the 
+predictors and the outcome variable. The estimating approach from Allison et al.
+provides better finite sample performance in terms of both bias and efficiency
+than other popular methods (e.g., the Arellano-Bond estimator).
 
-Note: This is BETA software. Expect bugs and missing functionality.
-It is best to cross-reference all results with xtdpdml for Stata. Go to
+These models are fit using structural equation models, using maximum
+likelihood estimation and offering the missing data handling and flexibility
+afforded by SEM. This package will reshape your data, specify the model 
+properly, and fit it with `lavaan`.
+
+Note: This software is in development.  It is best to cross-reference all
+results with xtdpdml for Stata. Go to
 [https://www3.nd.edu/~rwilliam/dynamic/](https://www3.nd.edu/~rwilliam/dynamic/)
 to learn about xtdpdml and the underlying method. You may also be interested
 in the article by Paul Allison, Richard Williams, and Enrique Moral-Benito in
@@ -183,7 +193,7 @@ as(fit, "lavaan")
 
 While you could convert the model to `lavaan` model and apply any of
 `lavaan`'s  functions to it (and you should!), as a convenience you can use 
-`lav_summary` to get `lavaan`'s summary of the model.
+`lav_summary()` to get `lavaan`'s summary of the model.
 
 ### Missing data
 

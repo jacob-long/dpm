@@ -13,6 +13,8 @@ Description: Implements the models described by Allison, Williams, and
  that are only weakly exogenous, i.e., are affected by prior values of 
  the dependent variable.
 License: MIT + file LICENSE
+BugReports: https://github.com/jacob-long/dpm/issues
+URL: https://github.com/jacob-long/dpm
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10),
