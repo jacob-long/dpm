@@ -597,14 +597,21 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 
 
   # Adding line breaks between the equations
-  out <- lapply(all_eqs, concat) # Concat is internal function defined in pdata.R
+  out <- lapply(all_eqs, concat) # concat is an internal function
 
   # Adding extra line breaks between each set of equations
-  out <- concat2(out) # Concat 2 is internal function defined pdata.R
+  out <- concat2(out) # concat2 is an internal function
 
-  # if (print == TRUE) {
-  #   cat(out, "\n")
-  # }
+  # Going to deal with non-syntactic names
+  if (any(make.names(names(wframe)) %nin% names(wframe))) {
+    ns_names <- names(wframe)[make.names(names(wframe)) %nin% names(wframe)]
+    for (n in ns_names) {
+      # reg_pattern <- paste0(escape_regex(n), "_[0-9]")
+      # rep_pattern <- paste0("`\\\\1`")
+      # out <- stringr::str_replace_all(out, reg_pattern, )
+      out <- gsub(n, paste0("`", n, "`"), out, fixed = TRUE)
+    }
+  }
 
   ret_obj <- list(model = out, data = wframe, complete_obs = complete_obs,
                   start = start, end = end, var_coefs = var_coefs)

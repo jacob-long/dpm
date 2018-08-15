@@ -133,10 +133,25 @@ dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
   endogs <- pf$endogs
   varying <- pf$varying
 
-  mf <- panel_model_frame(allvars, data)
+  # Helper function gets info about lag specification
+  mf <- panel_model_frame(pf$allvars, data)
 
   model <- model_builder(mf = mf, dv = dv, endogs = endogs, exogs = exogs,
                          constants = constants, id = id, wave = wave,
+  ## Using model_frame to allow for variable transformations in formulae
+  # Requires two different strategies depending on presence/absence of lagged
+  # variables since panel_model_frame returns different type of object.
+  if ("vars_lags" %in% names(mf)) {
+    form_names <- names(mf$vars_lags)[names(mf$vars_lags) %nin% c(id, wave)]
+    mod_formula <- paste("~", paste(form_names, collapse = " + "))
+    mod_formula <- as.formula(mod_formula)
+    mf$data <- panelr::model_frame(mod_formula, data = mf$data)
+  } else {
+    mod_formula <- paste("~", paste(pf$allvars, collapse = " + "))
+    mod_formula <- as.formula(mod_formula)
+    mf <- panelr::model_frame(mod_formula, data = mf)
+  }
+
                          err.inv = err.inv, const.inv = const.inv,
                          alpha.free = alpha.free, y.lag = y.lag,
                          y.free = y.free, fixed.effects = fixed.effects)
