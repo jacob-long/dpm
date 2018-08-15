@@ -368,7 +368,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
   }
 
   creg <- creg[!duplicated(creg)]
-  exogsreg <- exogsreg[!duplicated(creg)]
+  exogsreg <- exogsreg[!duplicated(exogsreg)]
 
   # Creating endogenous IV covariances
   endogs_covs <- NULL # in case there are no endogenous
