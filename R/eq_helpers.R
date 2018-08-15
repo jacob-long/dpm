@@ -149,7 +149,7 @@ tv_cov_eq <- function(var, start, end, endogs_lags, vbywave, endogs,
     # Add the only wave of DV not predicted in main_eqs
     for (wp in min_wave:(start - 1)) {
 
-      if (start > min_wave) {
+      if (start > min_wave & 0 %nin% y.lag) {
 
         reg <- c(reg, vbywave[[ch(wp)]][dv])
 

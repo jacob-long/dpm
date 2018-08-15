@@ -258,6 +258,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 
     ## Lastly, add prior wave of DV
     for (lag.y in y.lag) {
+      if (lag.y == 0) {next}
       lag_term <- if (y.free == TRUE | lag.y %in% y.free) {NULL} else {
         paste0("p", lag.y, " * ")
       }
@@ -316,7 +317,9 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 
   for (w in 1:(which(names(vbywave) == start) - 1)) {
     # Add waves of DV prior to first time it is used as regression DV
-    alpha_vars <- c(alpha_vars, vbywave[[w]][dv])
+    if (0 %nin% y.lag) { # Don't want this for non-dynamic specification
+      alpha_vars <- c(alpha_vars, vbywave[[w]][dv])
+    }
   }
 
   if (fixed.effects == TRUE) {re <- NULL} else {re <- "0 *"}
@@ -404,16 +407,22 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 
     for (c in constants) {
 
-      ## Covary with all values of DV prior to first regression
-      reg <- paste(c, "~~", vbywave[[ch(min_wave)]][dv])
-      if (start > min_wave + 1) { # This is needed if there is > 1 lag
+      if (0 %nin% y.lag) {
+        ## Covary with all values of DV prior to first regression
+        reg <- paste(c, "~~", vbywave[[ch(min_wave)]][dv])
+        if (start > min_wave + 1) { # This is needed if there is > 1 lag
 
-        for (wp in (min_wave + 1):(start - 1)) {
+          for (wp in (min_wave + 1):(start - 1)) {
 
-          reg <- paste(reg, "+", vbywave[[ch(wp)]][dv])
+            reg <- paste(reg, "+", vbywave[[ch(wp)]][dv])
+
+          }
 
         }
-
+      } else if (which(constants == c) < length(constants)) {
+        reg <- paste(c, "~~")
+      } else {
+        reg <- NULL
       }
 
       if (which(constants == c) < length(constants)) {
