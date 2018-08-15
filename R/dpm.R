@@ -241,7 +241,11 @@ setMethod("summary", "dpm",
   if ("p" %in% which_cols) {which_cols <- c(which_cols, "")}
 
   # Cut out some of the extraneous info
-  fixed_coefs <- fixed_coefs[!duplicated(fixed_coefs[,"label"]), which_coefs]
+  if (a$y.free == FALSE) {
+    fixed_coefs <- fixed_coefs[!duplicated(fixed_coefs[,"label"]), which_coefs]
+  } else {
+    fixed_coefs <- fixed_coefs[!duplicated(fixed_coefs[,"label"]), which_coefs]
+  }
 
   pretty_names <- c(a$var_coefs$var)
   a$var_coefs$pretty_name <- NA
@@ -263,13 +267,34 @@ setMethod("summary", "dpm",
 
   }
 
+  # Get table of lagged y for each wave
+  if (a$y.free == TRUE) {
+    y_coefs <- coefs[coefs$label == "" & coefs$op == "~", c("lhs", which_coefs)]
+    fixed_coefs <- fixed_coefs[fixed_coefs$label != "", ]
+  }
+
   if (pvalue == TRUE) {
-    coeft <- as.matrix(cbind(fixed_coefs[which_coefs], rep(0, nrow(fixed_coefs))))
+    coeft <- as.data.frame(
+      cbind(fixed_coefs[,which_coefs], rep(0, nrow(fixed_coefs)))
+    )
+
+    if (a$y.free == TRUE) {
+      y_coeft <- as.data.frame(
+        cbind(y_coefs[,c("lhs", which_coefs)], rep(0, nrow(y_coefs)))
+      )
+    }
   } else {
-    coeft <- as.matrix(fixed_coefs[which_coefs])
+    coeft <- as.data.frame(fixed_coefs[,which_coefs])
+
+    if (a$y.free == TRUE) {
+      y_coeft <- as.data.frame(y_coefs[,c("lhs", which_coefs)])
+    }
   }
 
   coeft <- coeft[,colnames(coeft) %nin% "label"]
+  if (a$y.free == TRUE) {
+    y_coeft <- y_coeft[,colnames(y_coeft) %nin% "label"]
+  }
 
   rownames(coeft) <-
     a$var_coefs$pretty_name[sapply(fixed_coefs[,"label"], function(x) {
@@ -277,29 +302,47 @@ setMethod("summary", "dpm",
     })]
   colnames(coeft) <- which_cols
   coeft <- as.data.frame(coeft)
-  coeft <- round_df_char(coeft, digits)
+  # coeft <- round_df_char(coeft, digits)
+
+  if (a$y.free == TRUE) {
+    rns <- a$var_coefs$pretty_name[sapply(y_coefs[,"label"], function(x) {
+      which(a$var_coefs$coef == x)
+    })]
+    rns <- paste0(rns, " [t = ",
+                  stringr::str_extract(y_coeft[,"lhs"], "(?<=_)[0-9]"), "]")
+    rownames(y_coeft) <- rns
+    y_coeft <- y_coeft[, colnames(y_coeft) %nin% "lhs"]
+    colnames(y_coeft) <- which_cols
+    y_coeft <- as.data.frame(y_coeft)
+    # y_coeft <- round_df_char(y_coeft, digits)
+  }
 
   if (pvalue == TRUE) {
     pvals <- coeft[,"p"]
 
     sigstars <- c()
     for (y in 1:nrow(coeft)) {
-      if (!is.finite(y) || pvals[y] > 0.1) {
-        sigstars[y] <- ""
-      } else if (pvals[y] <= 0.1 & pvals[y] > 0.05) {
-        sigstars[y] <- "."
-      } else if (pvals[y] > 0.01 & pvals[y] <= 0.05) {
-        sigstars[y] <- "*"
-      } else if (pvals[y] > 0.001 & pvals[y] <= 0.01) {
-        sigstars[y] <- "**"
-      } else if (pvals[y] <= 0.001) {
-        sigstars[y] <- "***"
-      }
+      sigstars[y] <- get_stars(pvals[y])
     }
 
     coeft[,ncol(coeft)] <- sigstars
     names(coeft)[ncol(coeft)] <- ""
+
+    if (a$y.free) {
+      pvals <- y_coeft[,"p"]
+
+      sigstars <- c()
+      for (y in 1:nrow(y_coeft)) {
+        sigstars[y] <- get_stars(pvals[y])
+      }
+
+      y_coeft[,ncol(y_coeft)] <- sigstars
+      names(y_coeft)[ncol(y_coeft)] <- ""
+    }
+
   }
+
+  if (a$y.free == FALSE) {y_coeft <- NULL}
 
   converged <- lavaan::lavInspect(object, what = "converged")
   iters <- lavaan::lavInspect(object, what = "iterations")
@@ -307,11 +350,13 @@ setMethod("summary", "dpm",
   fitms <- lavaan::fitmeasures(object)
   fitms <- round(fitms, digits)
 
-  out <- list(coefficients = coeft, model = object, fitmeasures = fitms)
+  out <- list(coefficients = coeft, model = object, fitmeasures = fitms,
+              ylag_coefficients = y_coeft)
   class(out) <- "summary.dpm"
   out <- structure(out, dv = a$dv, tot_obs = a$tot_obs,
                    complete_obs = a$complete_obs, start = a$start, end = a$end,
-                   converged = converged, iters = iters)
+                   converged = converged, iters = iters, y.free = a$y.free,
+                   digits = digits)
   return(out)
 
 })
@@ -344,7 +389,11 @@ print.summary.dpm <- function(x, ...) {
       " = ", fitms["rmsea.pvalue"], "\n", sep = "")
   cat(italic("SRMR"), "=", fitms["srmr"], "\n\n")
 
-  print(coeft)
+  if (!is.null(x$ylag_coefficients)) {
+    coeft <- rbind(coeft, x$ylag_coefficients)
+  }
+
+  print(round_df_char(coeft, digits = a$digits))
 
   cat("\n")
 

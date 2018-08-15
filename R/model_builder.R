@@ -263,7 +263,11 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
         paste0("p", lag.y, " * ")
       }
       reg <- paste(reg, " + ", lag_term, vbywave[[ch(w - lag.y)]][dv], sep = "")
-      var_coefs[nrow(var_coefs) + 1,] <-  list(dv, paste0("p", lag.y), lag.y)
+      if (y.free == FALSE) {
+        var_coefs[nrow(var_coefs) + 1,] <-  list(dv, paste0("p", lag.y), lag.y)
+      } else {
+        var_coefs[nrow(var_coefs) + 1,] <-  list(dv, "", lag.y)
+      }
     }
 
     ## Save finished equation to list (okay, technically a vector)
