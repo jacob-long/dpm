@@ -84,6 +84,7 @@
 #' @importFrom lavaan sem lavInspect
 #' @importFrom methods as
 #' @import rlang
+#' @importFrom panelr is_panel
 #'
 #' @examples
 #' # Load example data
@@ -104,7 +105,8 @@ dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
                 fixed.effects = TRUE, print.only = FALSE,
                 id = NULL, wave = NULL, ...) {
 
-  if ("panel_data" %nin% class(data)) {
+  # Check data integrity
+  if (!is_panel(data)) {
 
       if (!is.data.frame(data)) {
         stop("data argument must be a data frame.")

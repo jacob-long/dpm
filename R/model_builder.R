@@ -5,10 +5,11 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 
 ##### Get lag info ############################################################
 
-  if ("panel_data" %in% class(mf)) {
+  if (is_panel(mf)) {
 
     d <- mf
-    mf$vars_lags <- 0
+    mf["vars_lags"] <- 0
+    mf["og_terms"] <- NULL
 
   } else {
 
@@ -21,7 +22,9 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
   ## and their lag numbers are
   if (!is.null(endogs)) {
 
-    if (length(mf$og_terms) > 0) {
+    if (is_panel(mf)) {
+      indices <- NULL
+    } else if (length(mf["og_terms"]) > 0) {
       indices <- which(names(mf$new_names) %in% endogs)
     } else {
       indices <- NULL
@@ -63,7 +66,9 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
     ## Saving info about where in the respective lists the exogenous variables
     ## and their lag numbers are
 
-    if (length(mf$og_terms) > 0) {
+    if (is_panel(mf)) {
+      indices <- NULL
+    } else if (length(mf["og_terms"]) > 0) {
       indices <- which(names(mf$new_names) %in% exogs)
     } else {
       indices <- NULL
