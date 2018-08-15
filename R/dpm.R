@@ -83,6 +83,7 @@
 #' @rdname dpm
 #' @importFrom lavaan sem lavInspect
 #' @importFrom methods as
+#' @importFrom stats as.formula
 #' @import rlang
 #' @importFrom panelr is_panel
 #'
@@ -124,20 +125,12 @@ dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
 
   }
 
+  # Helper function to get info from model formula
   pf <- cl_formula_parser(formula)
-
-  allvars <- pf$allvars
-  dv <- pf$dv
-  constants <- pf$constants
-  exogs <- pf$exogs
-  endogs <- pf$endogs
-  varying <- pf$varying
 
   # Helper function gets info about lag specification
   mf <- panel_model_frame(pf$allvars, data)
 
-  model <- model_builder(mf = mf, dv = dv, endogs = endogs, exogs = exogs,
-                         constants = constants, id = id, wave = wave,
   ## Using model_frame to allow for variable transformations in formulae
   # Requires two different strategies depending on presence/absence of lagged
   # variables since panel_model_frame returns different type of object.
@@ -152,38 +145,41 @@ dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
     mf <- panelr::model_frame(mod_formula, data = mf)
   }
 
+  # Helper function to write the lavaan syntax
+  model <- model_builder(mf = mf, dv = pf$dv, endogs = pf$endogs,
+                         exogs = pf$exogs,
+                         constants = pf$constants, id = id, wave = wave,
                          err.inv = err.inv, const.inv = const.inv,
                          alpha.free = alpha.free, y.lag = y.lag,
                          y.free = y.free, fixed.effects = fixed.effects)
 
+  # If only printing is wanted, just print it and stop
   if (print.only == TRUE) {
     cat(model$model)
     return(invisible(model$model))
   }
 
+  # Fit the model with lavaan
   s <- lavaan::sem(model = model$model, data = model$data, ...)
 
-  # numwaves <- length(unique(mf$data[[wave]]))
   nobs_o <- length(unique(data[[id]]))
   # nobs_used <- lavaan::lavInspect(s, what = "ntotal")
 
-  # out <- list(fit = s, mod_string = model$model, wide_data = model$data)
+  # Initialize the dpm object
   out <- as(s, Class = "dpm")
   out@mod_string <- model$model
   out@wide_data <- model$data
   out@call <- sys.call()
 
-  out@call_info <- list(out, dv = dv, tot_obs = nobs_o,
-                        complete_obs = model$complete_obs, endogs = endogs,
-                        exogs = exogs, start = model$start, end = model$end,
+  out@call_info <- list(out, dv = pf$dv, tot_obs = nobs_o,
+                        complete_obs = model$complete_obs, endogs = pf$endogs,
+                        exogs = pf$exogs, start = model$start, end = model$end,
                         y.lag = y.lag, var_coefs = model$var_coefs,
                         y.free = y.free, fixed.effects = fixed.effects,
                         alpha.free = alpha.free, const.inv = const.inv,
                         err.inv = err.inv)
 
-  # class(out) <- "clfe"
-
-  invisible(out)
+  return(out)
 
 }
 

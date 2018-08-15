@@ -93,6 +93,20 @@ make_ci_labs <- function(ci.width) {
 
 `%nin%` <- function(x, table) is.na(match(x, table, nomatch = NA_integer_))
 
+get_stars <- function(y) {
+  if (!is.finite(y) || y > 0.1) {
+    ""
+  } else if (y <= 0.1 & y > 0.05) {
+    "."
+  } else if (y > 0.01 & y <= 0.05) {
+    "*"
+  } else if (y > 0.001 & y <= 0.01) {
+    "**"
+  } else if (y <= 0.001) {
+    "***"
+  }
+}
+
 concat <- function(input) {
 
   input <- unlist(input)
