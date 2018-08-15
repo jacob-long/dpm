@@ -1,33 +1,39 @@
 Package: dpm
 Type: Package
 Title: Dynamic Panel Models Fit with Maximum Likelihood
-Version: 1.0.0.9000
+Version: 1.1.0.9000
 Authors@R: c(person(given = "Jacob A.",
   family = "Long", email = "long.1377@osu.edu", 
   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1582-6214")),
   person(given = "Richard A.", family = "Williams", role = "aut"))
-Description: Implements the models described by Allison, Williams, and
- Moral-Benito (2017) in R. This class of models uses structural equation 
+Description: Implements the dynamic panel models described by Allison, Williams,
+ and Moral-Benito (2017) in R. This class of models uses structural equation 
  modeling to specify dynamic (lagged dependent variable) models with 
  fixed effects for panel data. Additionally, models may have predictors
  that are only weakly exogenous, i.e., are affected by prior values of 
- the dependent variable.
+ the dependent variable. Options also allow for random effects,
+ dropping the lagged dependent variable, and a number of other specification
+ choices.
 License: MIT + file LICENSE
 BugReports: https://github.com/jacob-long/dpm/issues
 URL: https://github.com/jacob-long/dpm
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10),
-    lavaan
-Imports: methods,
-    panelr,
+    lavaan,
+    methods
+Imports: panelr,
     stringr,
     rlang,
-    crayon
-Suggests: knitr,
+    crayon,
+    stats4
+Suggests: broom,
+    tibble,
+    knitr,
     rmarkdown,
-    covr
+    covr,
+    testthat
 Remotes: jacob-long/panelr
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Roxygen: list(markdown = TRUE)

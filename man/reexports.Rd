@@ -4,13 +4,9 @@
 \name{reexports}
 \alias{reexports}
 \alias{panel_data}
-\alias{reexports}
 \alias{long_panel}
-\alias{reexports}
 \alias{widen_panel}
-\alias{reexports}
 \alias{get_wave}
-\alias{reexports}
 \alias{get_id}
 \title{Objects exported from other packages}
 \keyword{internal}

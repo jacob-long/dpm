@@ -4,9 +4,10 @@
 \alias{dpm}
 \title{Dynamic panel models fit with maximum likelihood}
 \usage{
-dpm(formula, data, err.inv = FALSE, const.inv = FALSE, alpha.free = FALSE,
-  y.lag = 1, y.free = FALSE, fixed.effects = TRUE, print.only = FALSE,
-  id = NULL, wave = NULL, ...)
+dpm(formula, data, err.inv = FALSE, const.inv = FALSE,
+  alpha.free = FALSE, y.lag = 1, y.free = FALSE,
+  fixed.effects = TRUE, print.only = FALSE, id = NULL, wave = NULL,
+  ...)
 }
 \arguments{
 \item{formula}{Model formula. See details for instructions on specifying
