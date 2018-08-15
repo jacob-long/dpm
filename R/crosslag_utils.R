@@ -1,4 +1,11 @@
+#' @importFrom stats terms
 cl_formula_parser <- function(formula) {
+
+  the_terms <- terms(formula)
+  if (any(attr(the_terms, "order") > 1)) {
+    stop("Interactions specified in the formula are not supported by dpm or",
+         "lavaan. You can create an interaction variable yourself if needed.")
+  }
 
   dv <- as.character(formula[[2]])
 
@@ -13,8 +20,8 @@ cl_formula_parser <- function(formula) {
     constants <- NULL
 
     varying <- stringr::str_split(formula, "\\+")
-    varying <- stringr::str_split(unlist(varying), "\\*")
-    varying <- stringr::str_split(unlist(varying), "\\:")
+    # varying <- stringr::str_split(unlist(varying), "\\*")
+    # varying <- stringr::str_split(unlist(varying), "\\:")
     varying <- unlist(lapply(varying, trimws))
 
     if (any(grepl(".*(?=pre\\()", varying, perl = T))) {
@@ -47,8 +54,8 @@ cl_formula_parser <- function(formula) {
     splitted <- stringr::str_split(formula, "\\|")
 
     varying <- stringr::str_split(splitted[[1]][1], "\\+")
-    varying <- stringr::str_split(unlist(varying), "\\*")
-    varying <- stringr::str_split(unlist(varying), "\\:")
+    # varying <- stringr::str_split(unlist(varying), "\\*")
+    # varying <- stringr::str_split(unlist(varying), "\\:")
     varying <- unlist(lapply(varying, trimws))
 
     if (any(grepl(".*(?=pre\\()", varying, perl = T))) {
@@ -73,15 +80,16 @@ cl_formula_parser <- function(formula) {
     }
 
     constants <- stringr::str_split(splitted[[1]][2], "\\+")
-    constants <- stringr::str_split(unlist(constants), "\\*")
-    constants <- stringr::str_split(unlist(constants), "\\:")
+    # constants <- stringr::str_split(unlist(constants), "\\*")
+    # constants <- stringr::str_split(unlist(constants), "\\:")
     constants <- unlist(lapply(constants, trimws))
 
     allvars <- c(dv, varying, constants)
 
   } else {
 
-    warning("Formula should only have two parts on the right-hand side. Note: Interactions are not supported for the cross-lagged fixed effects model.")
+    warning("Formula should only have two parts on the right-hand side.",
+            "Note: Interactions are not supported by dpm.")
 
   }
 
