@@ -416,6 +416,91 @@ print.summary.dpm <- function(x, ...) {
 
 }
 
+##### Other methods ###########################################################
+
+#' @title Various methods for `dpm` objects
+#' @description R likes it when these things have documentation.
+#' @param object A `dpm` object
+#' @param formula. An updated formula (optional)
+#' @param evaluate If updating, should the updated model be updated or just
+#'  return the call? Default is TRUE, re-run the model.
+#' @param ... Other arguments to update.
+#' @export
+#' @importFrom stats formula getCall update.formula update
+#' @rdname dpm-methods
+# Just a duplicate of the default update method, but I need it here since
+# lavaan has implemented a different method
+
+setMethod("update", signature(object = "dpm"),
+          function(object, formula., ..., evaluate = TRUE) {
+
+  call <- getCall(object)
+  extras <- match.call(expand.dots = FALSE)$...
+
+  if (!missing(formula.)) {
+    call$formula <- update.formula(formula(object), formula.)
+  }
+
+  if (length(extras)) {
+    existing <- !is.na(match(names(extras), names(call)))
+    for (a in names(extras)[existing]) call[[a]] <- extras[[a]]
+    if (any(!existing)) {
+      call <- c(as.list(call), extras[!existing])
+      call <- as.call(call)
+    }
+  }
+
+  if (evaluate) {eval(call, parent.frame())} else {call}
+
+})
+
+#' @export
+#' @importFrom methods show
+#' @rdname dpm-methods
+
+setMethod("show", "dpm", function(object) {
+
+  x <- summary(object)
+  a <- attributes(x)
+  fitms <- x$fitmeasures
+
+  cat(crayon::cyan("Dynamic Panel Model [dpm]"), ":\n\n", sep = "")
+
+  cat(underline("MODEL INFO:\n"))
+  cat(italic("Dependent variable:"), a$dv, "\n")
+  cat(italic("Total observations:"), a$tot_obs, "\n")
+  cat(italic("Complete observations:"), a$complete_obs, "\n")
+  cat(italic("Time periods:"), a$start, "-", a$end, "\n\n")
+
+  cat(underline("MODEL FIT:\n"))
+  cat("\U1D6D8\u00B2(", fitms["df"], ") = ", fitms["chisq"], "\n",
+      sep = "")
+
+  cat(italic("RMSEA")," = ", fitms["rmsea"], ", ",
+      "90% CI [", fitms["rmsea.ci.lower"],
+      ", ", fitms["rmsea.ci.upper"],"]", italic("\np(RMSEA < .05)"),
+      " = ", fitms["rmsea.pvalue"], "\n", sep = "")
+  cat(italic("SRMR"), "=", fitms["srmr"], "\n\n")
+
+  if (a$converged == TRUE) {
+    cat("Model converged after", a$iters, "iterations\n")
+  } else {
+    cat(crayon::red("WARNING: Model failed to converge after", a$iters,
+                    "iterations\n"))
+  }
+
+})
+
+#' @export
+#' @importFrom stats coef
+#' @rdname dpm-methods
+
+setMethod("coef", "dpm", function(object) {
+  out <- summary(object)$coefficients[,"Est."]
+  names(out) <- rownames(summary(object)$coefficients)
+  return(out)
+})
+
 ##### Tidiers #################################################################
 
 #' @title Tidy methods for dpm
