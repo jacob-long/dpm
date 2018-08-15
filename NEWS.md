@@ -1,4 +1,28 @@
-## dpm 1.0.0.9000 --- major release
+# dpm 1.1.0.9000
+
+This release contains several important updates and a 1.1.x release is
+likely to be the one submitted to CRAN.
+
+## Bug fixes:
+* Fixed an error in models with no constants.
+* Fixed an error that sometimes caused predetermined variables to be treated
+incorrectly. (Vague, I know)
+* Summaries now include coefficients for each wave of the lagged DV(s) when
+`y.free` is TRUE.
+
+## Feature updates:
+* Models without lagged dependent variables are now supported (use `y.lag = 0`)
+* Variable transformations in the model formula are now supported
+(e.g., `y ~ scale(x)`).
+* You can now update `dpm` models with `update`. 
+* `dpm` objects now a have a `tidy` method via the `broom` package.
+
+As a side note, there is now a *testing* suite in place to check models
+for accuracy/consistency with `xtdpdml`. That doesn't mean there will be no
+bugs, but it should help prevent any regressions. 
+
+
+# dpm 1.0.0 --- major release
 
 This is a major release with several breaking changes compared to the initial
 development release.
@@ -31,7 +55,7 @@ or random effects (`FALSE`) specification.
 * `alpha.free`: Equivalent to `xtdpdml`'s `alphafree`. Allow the fixed effects
 to vary over time.
 
-## clfe 0.3.0
+# clfe 0.3.0
 
 * Added a `NEWS.md` file to track changes to the package.
 
