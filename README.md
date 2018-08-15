@@ -135,7 +135,7 @@ summary(fit)
     ed            -0.107 0.056 -1.893 0.058   .
     wks (t - 1)    0.188 0.020  9.586 0.000 ***
     
-    Model converged after 613 iterations
+    Model converged after 603 iterations
 
 Any arguments supplied other than those that are documented within the
 `dpm` function are passed on to `sem` from the `lavaan` package.
@@ -147,8 +147,8 @@ specification:
 
   - `y.lag`: By default the lag 1 value of the DV is included as a
     predictor (this is why they are dynamic models). You may choose a
-    different value or multiple values instead, though you may not
-    choose 0 or NULL (i.e., you must have *some* lagged DV).
+    different value or multiple values instead, including 0 (no lagged
+    DV at all).
   - `fixed.effects`: By default, the model is specified as a fixed
     effects model. If you set this to FALSE, you get a random effects
     specification instead.
@@ -267,7 +267,7 @@ Take advantage of `lavaan`’s missing data handling by using the `missing
 = "fiml"` argument as well as any other arguments accepted by
 `lavaan::sem()`.
 
-# Missing features/problems
+# Feature comparison and roadmap
 
   - CFI/TLI fit measures are much different than Stata’s and
     consistently more optimistic. For now, they are not printed with the
@@ -276,25 +276,41 @@ Take advantage of `lavaan`’s missing data handling by using the `missing
     lag(x)`).~~ (Fixed in `1.0.0`)
   - The function does not yet support input data that is already in wide
     format.
-  - You cannot apply arbitrary functions to variables in the formula
+  - ~~You cannot apply arbitrary functions to variables in the formula
     like you can with regression models. For instance, a specification
-    like `y ~ scale(x)` will cause an error.
+    like `y ~ scale(x)` will cause an error.~~ (Works as of `1.1.0`)
 
-The following `xtdpdml` (Stata) options are not implemented:
+Feature parity with `xtdpdml` (Stata) is a goal. Here’s how we are doing
+in terms of matching relevant `xtdpdml` options:
 
-  - xfree
-  - ~~yfree~~ (added as `y.free` argument in `1.0.0`)
-  - ~~re~~ (added as `fixed.effects` argument in `1.0.0`)
-  - ~~ylag~~ (added as `y.lag` argument in `1.0.0`)
-  - std (but `standardize` argument of `summary` may suffice)
+  - \[x\] `alphafree` (as `alpha.free`)
+  - \[ \] `xfree`
+  - \[ \] `xfree(varlist)`
+  - \[x\] `yfree` (added as `y.free` argument in `1.0.0`)
+  - \[ \] `yfree(numlist)`
+  - \[x\] `re` (added via `fixed.effects` argument in `1.0.0`)
+  - \[x\] `errorinv` (as `err.inv`)
+  - \[x\] `nocsd`/`constinv` (as `const.inv`)
+  - \[x\] `ylag(numlist)` (added as `y.lag` argument in `1.0.0`; option
+    to specify as 0 — no lagged DV — added in `1.1.0`)
+  - \[ \] `std` (but `standardize` argument of `summary` may suffice)
+  - \[x\] `dryrun` (as `print.only`)
+
+Many and perhaps more SEM fitting options are implemented by virtue of
+accepting any `lavaan::sem` argument.
 
 ## Roadmap
 
-  - Get proper CFI/TLI statistics
-  - Allow full use of formula syntax, e.g. `y ~ scale(x)`
-  - Create a `predict` method and perhaps some ability to plot
+  - \[ \] Get proper CFI/TLI statistics — this is a `lavaan` problem.
+  - \[x\] Allow full use of formula syntax, e.g. `y ~ scale(x)` (fixed
+    in `1.1.0`)
+  - \[x\] Add `broom` methods (`tidy`, `glance`) (added `tidy` in
+    `1.1.0`)
+  - \[ \] Create a `predict` method and perhaps some ability to plot
     predictions
-  - Add `broom` methods (`tidy`, `glance`)
+  - \[ \] Add `x.free` option to allow the coefficients of all
+    predictors to vary across periods. This will make the `summary`
+    output a pain, so it will take some time to implement.
 
 # Reference
 
