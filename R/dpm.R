@@ -175,6 +175,7 @@ dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
 
 ##### dpm summary #############################################################
 
+#' @rdname summary.dpm
 #' @title Summarize dpm objects
 #' @description The summary method is designed to offer similar arguments to
 #'   `lavaan`'s summary, but with shorter and more domain-specific output.
@@ -196,6 +197,7 @@ dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
 #' @param ... Ignored.
 #' @export
 #' @importFrom crayon underline italic
+#' @importFrom stats4 summary
 
 setMethod("summary", "dpm",
           function(object, standardized = FALSE, ci = FALSE, se = TRUE,
