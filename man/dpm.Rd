@@ -4,10 +4,10 @@
 \alias{dpm}
 \title{Dynamic panel models fit with maximum likelihood}
 \usage{
-dpm(formula, data, err.inv = FALSE, const.inv = FALSE,
+dpm(formula, data, error.inv = FALSE, const.inv = FALSE,
   alpha.free = FALSE, y.lag = 1, y.free = FALSE,
   fixed.effects = TRUE, print.only = FALSE, id = NULL, wave = NULL,
-  ...)
+  err.inv = NULL, ...)
 }
 \arguments{
 \item{formula}{Model formula. See details for instructions on specifying
@@ -15,7 +15,7 @@ parameters properly.}
 
 \item{data}{Data frame in "long" format. Prefers a "panel_data" object.}
 
-\item{err.inv}{Constrain the error variance to be equal across waves.
+\item{error.inv}{Constrain the error variance to be equal across waves.
 Default is FALSE.}
 
 \item{const.inv}{Constrain the dependent variable's variance to be equal
@@ -44,6 +44,8 @@ observation is. Not needed if \code{data} is a "panel_data" object.}
 
 \item{wave}{Name of the data column that identifies which wave the
 observation is from. Not needed if \code{data} is a "panel_data" object.}
+
+\item{err.inv}{Deprecated, same purpose as \code{error.inv}.}
 
 \item{...}{Extra parameters to pass to \code{\link[lavaan]{sem}}. Examples
 could be \code{missing = "fiml"} for missing data or
@@ -99,7 +101,7 @@ wages <- panel_data(WageData, id = id, wave = t)
 
 # Replicates Allison, Williams, & Moral-Benito (2017) analysis
 fit <- dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
-            err.inv = TRUE, information = "observed")
+            error.inv = TRUE, information = "observed")
 # Note: information = "observed" only needed to match Stata/SAS standard errors
 summary(fit)
 

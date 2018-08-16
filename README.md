@@ -113,7 +113,7 @@ Note that to get matching standard errors, set `information =
 
 ``` r
 fit <- dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
-           err.inv = TRUE, information = "observed")
+           error.inv = TRUE, information = "observed")
 summary(fit)
 ```
 
@@ -289,7 +289,7 @@ in terms of matching relevant `xtdpdml` options:
   - \[x\] `yfree` (added as `y.free` argument in `1.0.0`)
   - \[ \] `yfree(numlist)`
   - \[x\] `re` (added via `fixed.effects` argument in `1.0.0`)
-  - \[x\] `errorinv` (as `err.inv`)
+  - \[x\] `errorinv` (as `error.inv`)
   - \[x\] `nocsd`/`constinv` (as `const.inv`)
   - \[x\] `ylag(numlist)` (added as `y.lag` argument in `1.0.0`; option
     to specify as 0 — no lagged DV — added in `1.1.0`)

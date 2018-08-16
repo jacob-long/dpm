@@ -4,7 +4,7 @@ data("WageData", package = "panelr")
 wages <- panel_data(WageData, id = id, wave = t)
 
 fit <- tryCatch({dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
-           err.inv = TRUE, information = "observed")}, error = function(x) NULL)
+           error.inv = TRUE, information = "observed")}, error = function(x) NULL)
 
 test_that("Model runs", {
   expect_s4_class(fit, "dpm")

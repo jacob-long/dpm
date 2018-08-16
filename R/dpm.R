@@ -10,7 +10,7 @@
 #'  observation is. Not needed if \code{data} is a "panel_data" object.
 #' @param wave Name of the data column that identifies which wave the
 #'  observation is from. Not needed if \code{data} is a "panel_data" object.
-#' @param err.inv Constrain the error variance to be equal across waves.
+#' @param error.inv Constrain the error variance to be equal across waves.
 #'  Default is FALSE.
 #' @param const.inv Constrain the dependent variable's variance to be equal
 #'  across waves. This removes cross-sectional dependence. Default is FALSE.
@@ -27,6 +27,7 @@
 #'  you get a random effects specification instead.
 #' @param print.only Instead of estimating the model, print the \pkg{lavaan}
 #'  model string to the console instead.
+#' @param err.inv Deprecated, same purpose as `error.inv`.
 #' @param ... Extra parameters to pass to \code{\link[lavaan]{sem}}. Examples
 #'  could be \code{missing = "fiml"} for missing data or
 #'  \code{estimator = "MLM"} for robust estimation.
@@ -95,16 +96,16 @@
 #'
 #' # Replicates Allison, Williams, & Moral-Benito (2017) analysis
 #' fit <- dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
-#'             err.inv = TRUE, information = "observed")
+#'             error.inv = TRUE, information = "observed")
 #' # Note: information = "observed" only needed to match Stata/SAS standard errors
 #' summary(fit)
 #'
 #'
 
-dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
+dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                 alpha.free = FALSE, y.lag = 1, y.free = FALSE,
                 fixed.effects = TRUE, print.only = FALSE,
-                id = NULL, wave = NULL, ...) {
+                id = NULL, wave = NULL, err.inv = NULL, ...) {
 
   # Check data integrity
   if (!is_panel(data)) {
@@ -123,6 +124,12 @@ dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
     wave <- panelr::get_wave(data)
     id <- panelr::get_id(data)
 
+  }
+
+  # Catch deprecated arg.
+  if (!is.null(err.inv)) {
+    error.inv <- err.inv
+    message("err.inv is deprecated. Please use error.inv instead.")
   }
 
   # Helper function to get info from model formula
@@ -149,7 +156,7 @@ dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
   model <- model_builder(mf = mf, dv = pf$dv, endogs = pf$endogs,
                          exogs = pf$exogs,
                          constants = pf$constants, id = id, wave = wave,
-                         err.inv = err.inv, const.inv = const.inv,
+                         err.inv = error.inv, const.inv = const.inv,
                          alpha.free = alpha.free, y.lag = y.lag,
                          y.free = y.free, fixed.effects = fixed.effects)
 
@@ -177,7 +184,7 @@ dpm <- function(formula, data, err.inv = FALSE, const.inv = FALSE,
                         y.lag = y.lag, var_coefs = model$var_coefs,
                         y.free = y.free, fixed.effects = fixed.effects,
                         alpha.free = alpha.free, const.inv = const.inv,
-                        err.inv = err.inv)
+                        error.inv = error.inv)
 
   return(out)
 
