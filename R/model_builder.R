@@ -392,7 +392,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 ###### Exogenous tv covariances ###############################################
 
   exogs_covs <- NULL
-  if (!is.null(exogs)) {
+  if (length(exogs) > 0) {
 
     # Iterating through endogenous variables
     exogs_covs <- tv_cov_eqs(var = var, start = start, end = end,

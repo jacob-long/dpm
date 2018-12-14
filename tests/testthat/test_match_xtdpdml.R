@@ -16,6 +16,20 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 138.48, tolerance = 0.01)
 })
 
+context("Basic model with only predetermined predictor")
+
+fit <- tryCatch({dpm(lwage ~ pre(lag(union)), data = wages)},
+                error = function(x) NULL)
+
+test_that("Model runs", {
+  expect_s4_class(fit, "dpm")
+})
+
+test_that("Model is accurate", {
+  s <- summary(fit)
+  expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 37)
+  expect_equivalent(s$fitmeasures["chisq"], expected = 271.23, tolerance = 0.01)
+})
 
 context("Basic model with all data types")
 
