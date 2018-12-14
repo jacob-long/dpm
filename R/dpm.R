@@ -256,8 +256,8 @@ setMethod("summary", "dpm",
            "pvalue" = "p")
   }))
 
-  if ("p" %in% which_cols) {which_cols <- c(which_cols, "")}
-
+  # if ("p" %in% which_cols) {which_cols <- c(which_cols, "")}
+  #
   # Cut out some of the extraneous info
   if (a$y.free == FALSE) {
     fixed_coefs <- fixed_coefs[!duplicated(fixed_coefs[,"label"]), which_coefs]
@@ -291,22 +291,10 @@ setMethod("summary", "dpm",
     fixed_coefs <- fixed_coefs[fixed_coefs$label != "", ]
   }
 
-  if (pvalue == TRUE) {
-    coeft <- as.data.frame(
-      cbind(fixed_coefs[,which_coefs], rep(0, nrow(fixed_coefs)))
-    )
+  coeft <- as.data.frame(fixed_coefs[,which_coefs])
 
-    if (a$y.free == TRUE) {
-      y_coeft <- as.data.frame(
-        cbind(y_coefs[,c("lhs", which_coefs)], rep(0, nrow(y_coefs)))
-      )
-    }
-  } else {
-    coeft <- as.data.frame(fixed_coefs[,which_coefs])
-
-    if (a$y.free == TRUE) {
-      y_coeft <- as.data.frame(y_coefs[,c("lhs", which_coefs)])
-    }
+  if (a$y.free == TRUE) {
+    y_coeft <- as.data.frame(y_coefs[,c("lhs", which_coefs)])
   }
 
   coeft <- coeft[,colnames(coeft) %nin% "label"]
@@ -335,31 +323,6 @@ setMethod("summary", "dpm",
     # y_coeft <- round_df_char(y_coeft, digits)
   }
 
-  if (pvalue == TRUE) {
-    pvals <- coeft[,"p"]
-
-    sigstars <- c()
-    for (y in 1:nrow(coeft)) {
-      sigstars[y] <- get_stars(pvals[y])
-    }
-
-    coeft[,ncol(coeft)] <- sigstars
-    names(coeft)[ncol(coeft)] <- ""
-
-    if (a$y.free) {
-      pvals <- y_coeft[,"p"]
-
-      sigstars <- c()
-      for (y in 1:nrow(y_coeft)) {
-        sigstars[y] <- get_stars(pvals[y])
-      }
-
-      y_coeft[,ncol(y_coeft)] <- sigstars
-      names(y_coeft)[ncol(y_coeft)] <- ""
-    }
-
-  }
-
   if (a$y.free == FALSE) {y_coeft <- NULL}
 
   converged <- lavaan::lavInspect(object, what = "converged")
@@ -374,7 +337,7 @@ setMethod("summary", "dpm",
   out <- structure(out, dv = a$dv, tot_obs = a$tot_obs,
                    complete_obs = a$complete_obs, start = a$start, end = a$end,
                    converged = converged, iters = iters, y.free = a$y.free,
-                   digits = digits)
+                   digits = digits, pvalue = pvalue)
   return(out)
 
 })
@@ -411,7 +374,35 @@ print.summary.dpm <- function(x, ...) {
     coeft <- rbind(coeft, x$ylag_coefficients)
   }
 
-  print(round_df_char(coeft, digits = a$digits))
+  coeft <- round_df_char(coeft, digits = a$digits)
+
+  if (a$pvalue == TRUE) {
+    pvals <- as.numeric(coeft[,"p"])
+    coeft[,ncol(coeft) + 1] <- NA
+
+    sigstars <- c()
+    for (y in 1:nrow(coeft)) {
+      sigstars[y] <- get_stars(pvals[y])
+    }
+
+    coeft[,ncol(coeft)] <- sigstars
+    names(coeft)[ncol(coeft)] <- ""
+
+    if (a$y.free) {
+      pvals <- ylag_coefficients[,"p"]
+
+      sigstars <- c()
+      for (y in 1:nrow(ylag_coefficients)) {
+        sigstars[y] <- get_stars(pvals[y])
+      }
+
+      ylag_coefficients[,ncol(ylag_coefficients) + 1] <- sigstars
+      names(ylag_coefficients)[ncol(ylag_coefficients)] <- ""
+    }
+
+  }
+
+  print(coeft)
 
   cat("\n")
 
