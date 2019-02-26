@@ -1,5 +1,5 @@
 model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
-                          err.inv, const.inv, alpha.free, y.lag, y.free,
+                          err.inv, const.inv, alpha.free, y.lag, y.free, x.free,
                           fixed.effects) {
 
 
@@ -131,9 +131,6 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
   waves <- sort(unique(d[[wave]]))
   min_wave <- min(d[[wave]])
   max_wave <- max(d[[wave]])
-  # Helper function for later
-  ch <- function(x, ...) {as.character(x, ...)}
-  # wavesc <- ch(waves)
 
   # Creating list of time-varying variables in a list for constructing lavaan
   # model string
@@ -147,7 +144,8 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 
   # start variable is used to determine which wave to begin with
   start <- max(c(mf$vars_lags, y.lag)) + 1 # Depends on how many lags we have
-  if (start < (min_wave + max(y.lag))) {start <- min_wave + max(y.lag)} # But can't have lagged DV at wave 1 either
+  # But can't have lagged DV at wave 1 either
+  if (start < (min_wave + max(y.lag))) {start <- min_wave + max(y.lag)}
   end <- max_wave
   # if (start == 0) {
   #   start <- 1
@@ -179,6 +177,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 ####### Main dv equations #####################################################
 
   main_eqs <- NULL
+  # Create data frame of coefficient combinations and their names
   var_coefs <- data.frame(var = NA, coef = NA, lag = NA)
   # iterating over each wave for which we will predict the value of DV
   for (w in start:end) {
@@ -190,62 +189,47 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
     ## Loop through endogenous variables, putting all in a vector
     if (!is.null(endogs)) {
 
-      for (var in endogs) {
-
-        en_lags_l <- unlist(endogs_lags)
-        names(en_lags_l) <- rep(names(endogs_lags),
-                                times = sapply(endogs_lags, length))
-        index <- which(names(en_lags_l) == var) # For numbering the fixed coefs
-        for (i in index) {
-
-          reg_vars_en <- c(
-            reg_vars_en, paste0("en", i, " * ",
-                                vbywave[[ch(w - en_lags_l[i])]][var])
-          )
-          var_coefs[nrow(var_coefs) + 1,] <-
-            list(var, paste0("en", i), en_lags_l[i])
-
-        }
-
-      }
+      # Pass to helper function to reduce code duplication
+      reg_vars_en <- main_regressions_eq(
+        vars = endogs, vars_lags = endogs_lags, prefix = "en",
+        vbywave = vbywave, w = w, x.free = x.free, reg_vars = reg_vars_en
+      )
+      # Do the same for the var_coefs data frame
+      var_coefs <- main_regressions_df(
+        vars = endogs, vars_lags = endogs_lags, prefix = "en",
+        vbywave = vbywave, w = w, x.free = x.free, var_coefs = var_coefs
+      )
 
     }
 
     ## If there are exogenous time varying vars, loop through those
     if (!is.null(exogs)) {
 
-      for (var in exogs) {
-
-        ex_lags_l <- unlist(exogs_lags)
-        names(ex_lags_l) <- rep(names(exogs_lags),
-                                times = sapply(exogs_lags, length))
-        index <- which(names(ex_lags_l) == var) # For numbering the fixed coefs
-        for (i in index) {
-          reg_vars_ex <- c(
-            reg_vars_ex, paste0("ex", i, " * ",
-                                vbywave[[ch(w - ex_lags_l[i])]][var])
-          )
-          var_coefs[nrow(var_coefs) + 1,] <-
-            list(var, paste0("ex", i), ex_lags_l[i])
-        }
-
-      }
+      # Pass to helper function to reduce code duplication
+      reg_vars_ex <- main_regressions_eq(
+        vars = exogs, vars_lags = exogs_lags, prefix = "ex",
+        vbywave = vbywave, w = w, x.free = x.free, reg_vars = reg_vars_ex
+      )
+      # Do the same for the var_coefs data frame
+      var_coefs <- main_regressions_df(
+        vars = exogs, vars_lags = exogs_lags, prefix = "ex",
+        vbywave = vbywave, w = w, x.free = x.free, var_coefs = var_coefs
+      )
 
     }
 
     ## If there are constants, loop through them
     if (!is.null(constants)) {
-
       for (var in constants) {
-
         index <- which(constants == var)
+        # Check if it is in x.free
+        postfix <- if (var %in% x.free) paste0(index, "_", w) else index
         reg_vars_cons <- c(
-          reg_vars_cons, paste0("c", index, " * ", constants[index],
+          reg_vars_cons, paste0("c", postfix, " * ", constants[index],
                      sep = "")
         )
-        var_coefs[nrow(var_coefs) + 1,] <- list(var, paste0("c", index), 0)
+        var_coefs[nrow(var_coefs) + 1,] <- list(var, paste0("c", postfix), 0)
       }
-
     }
 
     reg_vars_en <- reg_vars_en[!duplicated(reg_vars_en)]

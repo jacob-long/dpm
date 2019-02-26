@@ -18,7 +18,7 @@ allows fitting models with fixed effects that do not assume strict
 exogeneity of predictors. That means you can simultaneously get the
 robustness to confounding offered by fixed effects models and account
 for reciprocal causation between the predictors and the outcome
-variable. The estimating approach from Allison et al. provides better
+variable. The estimating approach from Allison et al. provides better
 finite sample performance in terms of both bias and efficiency than
 other popular methods (e.g., the Arellano-Bond estimator).
 
@@ -124,7 +124,7 @@ summary(fit)
     Time periods: 2 - 7 
     
     MODEL FIT:
-    𝛘²(76) = 138.476
+    <U+0001D6D8>²(76) = 138.476
     RMSEA = 0.037, 90% CI [0.027, 0.047]
     p(RMSEA < .05) = 0.986
     SRMR = 0.025 
@@ -283,34 +283,33 @@ Take advantage of `lavaan`’s missing data handling by using the `missing
 Feature parity with `xtdpdml` (Stata) is a goal. Here’s how we are doing
 in terms of matching relevant `xtdpdml` options:
 
-  - \[x\] `alphafree` (as `alpha.free`)
-  - \[ \] `xfree`
-  - \[ \] `xfree(varlist)`
-  - \[x\] `yfree` (added as `y.free` argument in `1.0.0`)
-  - \[ \] `yfree(numlist)`
-  - \[x\] `re` (added via `fixed.effects` argument in `1.0.0`)
-  - \[x\] `errorinv` (as `error.inv`)
-  - \[x\] `nocsd`/`constinv` (as `const.inv`)
-  - \[x\] `ylag(numlist)` (added as `y.lag` argument in `1.0.0`; option
-    to specify as 0 — no lagged DV — added in `1.1.0`)
-  - \[ \] `std` (but `standardize` argument of `summary` may suffice)
-  - \[x\] `dryrun` (as `print.only`)
+  - [x] `alphafree` (as `alpha.free`)
+  - [x] `xfree` (as `x.free`)
+  - [x] `xfree(varlist)` (as `x.free`)
+  - [x] `yfree` (added as `y.free` argument in `1.0.0`)
+  - [ ] `yfree(numlist)`
+  - [x] `re` (added via `fixed.effects` argument in `1.0.0`)
+  - [x] `errorinv` (as `error.inv`)
+  - [x] `nocsd`/`constinv` (as `const.inv`)
+  - [x] `ylag(numlist)` (added as `y.lag` argument in `1.0.0`; option to
+    specify as 0 — no lagged DV — added in `1.1.0`)
+  - [ ] `std` (but `standardize` argument of `summary` may suffice)
+  - [x] `dryrun` (as `print.only`)
 
 Many and perhaps more SEM fitting options are implemented by virtue of
 accepting any `lavaan::sem` argument.
 
 ## Roadmap
 
-  - \[ \] Get proper CFI/TLI statistics — this is a `lavaan` problem.
-  - \[x\] Allow full use of formula syntax, e.g. `y ~ scale(x)` (fixed
-    in `1.1.0`)
-  - \[x\] Add `broom` methods (`tidy`, `glance`) (added `tidy` in
+  - [ ] Get proper CFI/TLI statistics — this is a `lavaan` problem.
+  - [x] Allow full use of formula syntax, e.g. `y ~ scale(x)` (fixed in
     `1.1.0`)
-  - \[ \] Create a `predict` method and perhaps some ability to plot
+  - [x] Add `broom` methods (`tidy`, `glance`) (added `tidy` in `1.1.0`)
+  - [ ] Create a `predict` method and perhaps some ability to plot
     predictions
-  - \[ \] Add `x.free` option to allow the coefficients of all
-    predictors to vary across periods. This will make the `summary`
-    output a pain, so it will take some time to implement.
+  - [x] Add `x.free` option to allow the coefficients of all predictors
+    to vary across periods. This will make the `summary` output a pain,
+    so it will take some time to implement. (added in `1.1.1`)
 
 # Reference
 

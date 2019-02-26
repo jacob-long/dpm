@@ -1,3 +1,6 @@
+# A little cheat to shorten my code
+ch <- function(x, ...) {as.character(x, ...)}
+
 tv_cov_eqs <- function(var, start, end, endogs_lags, vbywave, endogs,
                        exogsreg, creg, dv, y.lag,
                        mod_frame, min_wave, max_wave) {
@@ -181,4 +184,40 @@ tv_cov_eq <- function(var, start, end, endogs_lags, vbywave, endogs,
 
   return(mod_frame)
 
+}
+
+main_regressions_eq <- function(vars, vars_lags, prefix, vbywave, w, x.free,
+                                reg_vars) {
+  for (var in vars) {
+    vars_lags_l <- unlist(vars_lags)
+    names(vars_lags_l) <- rep(names(vars_lags),
+                              times = sapply(vars_lags, length))
+
+    index <- which(names(vars_lags_l) == var) # For numbering the fixed coefs
+    for (i in index) {
+      postfix <- if (var %in% x.free) paste0(i, "_", w) else i
+      reg_vars <- c(
+        reg_vars, paste0(prefix, postfix, " * ",
+                         vbywave[[ch(w - vars_lags_l[i])]][var])
+      )
+    }
+  }
+  return(reg_vars)
+}
+
+main_regressions_df <- function(vars, vars_lags, prefix, vbywave, w, x.free,
+                                var_coefs) {
+  for (var in vars) {
+    vars_lags_l <- unlist(vars_lags)
+    names(vars_lags_l) <- rep(names(vars_lags),
+                              times = sapply(vars_lags, length))
+
+    index <- which(names(vars_lags_l) == var) # For numbering the fixed coefs
+    for (i in index) {
+      postfix <- if (var %in% x.free) paste0(i, "_", w) else i
+      var_coefs[nrow(var_coefs) + 1,] <-
+        list(var, paste0(prefix, postfix), vars_lags_l[i])
+    }
+  }
+  return(var_coefs)
 }

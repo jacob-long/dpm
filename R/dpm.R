@@ -23,6 +23,11 @@
 #'  dependent variable to vary over time. Default is FALSE. You may alternately
 #'  provide a number or vector of numbers corresponding to which lags should
 #'  vary freely.
+#' @param x.free If TRUE, allows the regressions coefficient(s) for the
+#'  predictor(s) to vary over time. Default is FALSE. If TRUE, the predictor
+#'  regression coefficient(s) can vary over time. Alternately, you may provide
+#'  a character vector of predictors to allow to vary if you only want a subset
+#'  of predictors to vary.
 #' @param fixed.effects Fit a fixed effects model? Default is TRUE. If FALSE,
 #'  you get a random effects specification instead.
 #' @param print.only Instead of estimating the model, print the \pkg{lavaan}
@@ -86,6 +91,7 @@
 #' @importFrom methods as
 #' @importFrom stats as.formula
 #' @import rlang
+#' @import jtools
 #' @importFrom panelr is_panel
 #'
 #' @examples
@@ -104,7 +110,7 @@
 
 dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                 alpha.free = FALSE, y.lag = 1, y.free = FALSE,
-                fixed.effects = TRUE, print.only = FALSE,
+                x.free = FALSE, fixed.effects = TRUE, print.only = FALSE,
                 id = NULL, wave = NULL, err.inv = NULL, ...) {
 
   # Check data integrity
@@ -152,13 +158,32 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
     mf <- panelr::model_frame(mod_formula, data = mf)
   }
 
+  # Quick little helper
+  get_raw_vars <- function(vars) {
+    sapply(pf$allvars, function(x) {all.vars(formula(paste0("~", x)))})
+  }
+
+  # Checking that the x.free argument is valid
+  if (!is_false(x.free)) {
+    # If it's true, I'll convert to a character vector of all varying preds
+    if (is_true(x.free)) {
+      x.free <- c(get_raw_vars(pf$endogs), get_raw_vars(pf$exogs), pf$constants)
+    }
+    if (any(x.free %nin% c(get_raw_vars(pf$endogs), get_raw_vars(pf$exogs),
+                           pf$constants))) {
+      stop_wrap(paste0(x.free %not% c(pf$endogs, pf$exogs), collapse = " and "),
+                "provided to 'x.free' but not found among predictors.")
+    }
+  }
+
   # Helper function to write the lavaan syntax
   model <- model_builder(mf = mf, dv = pf$dv, endogs = pf$endogs,
                          exogs = pf$exogs,
                          constants = pf$constants, id = id, wave = wave,
                          err.inv = error.inv, const.inv = const.inv,
                          alpha.free = alpha.free, y.lag = y.lag,
-                         y.free = y.free, fixed.effects = fixed.effects)
+                         y.free = y.free, x.free = x.free,
+                         fixed.effects = fixed.effects)
 
   # If only printing is wanted, just print it and stop
   if (print.only == TRUE) {
@@ -182,7 +207,8 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                         complete_obs = model$complete_obs, endogs = pf$endogs,
                         exogs = pf$exogs, start = model$start, end = model$end,
                         y.lag = y.lag, var_coefs = model$var_coefs,
-                        y.free = y.free, fixed.effects = fixed.effects,
+                        y.free = y.free, x.free = x.free,
+                        fixed.effects = fixed.effects,
                         alpha.free = alpha.free, const.inv = const.inv,
                         error.inv = error.inv)
 

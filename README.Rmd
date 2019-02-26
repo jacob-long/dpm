@@ -216,8 +216,8 @@ Feature parity with `xtdpdml` (Stata) is a goal. Here's how we are doing
 in terms of matching relevant `xtdpdml` options:
 
 - [x] `alphafree` (as `alpha.free`)
-- [ ] `xfree`
-- [ ] `xfree(varlist)`
+- [x] `xfree` (as `x.free`)
+- [x] `xfree(varlist)` (as `x.free`)
 - [x] `yfree` (added as `y.free` argument in `1.0.0`)
 - [ ] `yfree(numlist)`
 - [x] `re` (added via `fixed.effects` argument in `1.0.0`)
@@ -237,9 +237,9 @@ accepting any `lavaan::sem` argument.
 - [x] Allow full use of formula syntax, e.g. `y ~ scale(x)` (fixed in `1.1.0`)
 - [x] Add `broom` methods (`tidy`, `glance`) (added `tidy` in `1.1.0`)
 - [ ] Create a `predict` method and perhaps some ability to plot predictions
-- [ ] Add `x.free` option to allow the coefficients of all predictors to
+- [x] Add `x.free` option to allow the coefficients of all predictors to
 vary across periods. This will make the `summary` output a pain, so it will
-take some time to implement.
+take some time to implement. (added in `1.1.1`)
 
 # Reference
 

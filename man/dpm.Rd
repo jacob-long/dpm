@@ -5,7 +5,7 @@
 \title{Dynamic panel models fit with maximum likelihood}
 \usage{
 dpm(formula, data, error.inv = FALSE, const.inv = FALSE,
-  alpha.free = FALSE, y.lag = 1, y.free = FALSE,
+  alpha.free = FALSE, y.lag = 1, y.free = FALSE, x.free = FALSE,
   fixed.effects = TRUE, print.only = FALSE, id = NULL, wave = NULL,
   err.inv = NULL, ...)
 }
@@ -32,6 +32,12 @@ regression. Default is 1, but any number of vector of numbers can be used.}
 dependent variable to vary over time. Default is FALSE. You may alternately
 provide a number or vector of numbers corresponding to which lags should
 vary freely.}
+
+\item{x.free}{If TRUE, allows the regressions coefficient(s) for the
+predictor(s) to vary over time. Default is FALSE. If TRUE, the predictor
+regression coefficient(s) can vary over time. Alternately, you may provide
+a character vector of predictors to allow to vary if you only want a subset
+of predictors to vary.}
 
 \item{fixed.effects}{Fit a fixed effects model? Default is TRUE. If FALSE,
 you get a random effects specification instead.}
