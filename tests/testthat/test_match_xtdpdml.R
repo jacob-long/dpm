@@ -277,3 +277,20 @@ test_that("Model is accurate", {
   expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 66)
   expect_equivalent(s$fitmeasures["chisq"], expected = 108.73, tolerance = 0.01)
 })
+# X free --------------------------------------------------------------
+
+context("X free")
+
+fit <- tryCatch({dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
+                     x.free = TRUE)}, error = function(x) NULL)
+
+test_that("Model runs", {
+  expect_s4_class(fit, "dpm")
+})
+
+test_that("Model is accurate", {
+  s <- summary(fit)
+  expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 56)
+  expect_equivalent(s$fitmeasures["chisq"], expected = 98.66, tolerance = 0.01)
+})
+
