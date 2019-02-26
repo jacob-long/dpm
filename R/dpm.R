@@ -117,11 +117,11 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   if (!is_panel(data)) {
 
       if (!is.data.frame(data)) {
-        stop("data argument must be a data frame.")
+        stop_wrap("data argument must be a data frame.")
       }
 
-      id <- expr_text(enexpr(id))
-      wave <- expr_text(enexpr(wave))
+      id <- as_name(enexpr(id))
+      wave <- as_name(enexpr(wave))
 
       data <- panelr::panel_data(data, !! sym(id), !! sym(wave))
 
@@ -135,7 +135,7 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   # Catch deprecated arg.
   if (!is.null(err.inv)) {
     error.inv <- err.inv
-    message("err.inv is deprecated. Please use error.inv instead.")
+    msg_wrap("err.inv is deprecated. Please use error.inv instead.")
   }
 
   # Helper function to get info from model formula
@@ -215,7 +215,6 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   return(out)
 
 }
-
 
 ##### dpm summary #############################################################
 
