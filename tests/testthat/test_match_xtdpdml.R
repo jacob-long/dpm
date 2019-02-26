@@ -16,6 +16,11 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 138.48, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
+
 context("Basic model with only predetermined predictor")
 
 fit <- tryCatch({dpm(lwage ~ pre(lag(union)), data = wages)},
@@ -29,6 +34,11 @@ test_that("Model is accurate", {
   s <- summary(fit)
   expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 37)
   expect_equivalent(s$fitmeasures["chisq"], expected = 271.23, tolerance = 0.01)
+})
+
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
 })
 
 context("Basic model with all data types")
@@ -46,6 +56,11 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 110.23, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
+
 context("Basic model with all data types x2")
 
 fit <- tryCatch({dpm(wks ~ pre(lag(union)) + pre(lag(ms)) + lag(lwage) + lag(ind) |
@@ -59,6 +74,11 @@ test_that("Model is accurate", {
   s <- summary(fit)
   expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 124)
   expect_equivalent(s$fitmeasures["chisq"], expected = 184.47, tolerance = 0.01)
+})
+
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
 })
 
 context("Basic model with all data types (no lags)")
@@ -76,6 +96,10 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 95.40, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
 
 # No lagged DV ------------------------------------------------------------
 
@@ -95,6 +119,11 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 223.10, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
+
 fit <- tryCatch({dpm(wks ~ pre(lag(union)) + lag(lwage) + occ | ed + blk,
                      data = wages, y.lag = 0)}, error = function(x) NULL)
 
@@ -107,6 +136,11 @@ test_that("Model is accurate", {
   s <- summary(fit)
   expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 101)
   expect_equivalent(s$fitmeasures["chisq"], expected = 219.53, tolerance = 0.01)
+})
+
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
 })
 
 fit <- tryCatch({dpm(wks ~ pre(lag(union)) + lag(lwage) + occ | ed + blk,
@@ -123,6 +157,11 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 237.72, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
+
 fit <- tryCatch({dpm(wks ~ pre(lag(union)) + lag(lwage) + occ, data = wages,
                      y.lag = 0)},
                 error = function(x) NULL)
@@ -137,6 +176,10 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 201.97, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
 
 # Multiple y lags ---------------------------------------------------------
 
@@ -155,6 +198,11 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 79.17, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
+
 fit <- tryCatch({dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
            y.lag = c(1,3))}, error = function(x) NULL)
 
@@ -166,6 +214,11 @@ test_that("Model is accurate", {
   s <- summary(fit)
   expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 34)
   expect_equivalent(s$fitmeasures["chisq"], expected = 35.54, tolerance = 0.01)
+})
+
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
 })
 
 fit <- tryCatch({dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages,
@@ -181,6 +234,10 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 31.72, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
 
 # Multiple predictor lags -------------------------------------------------
 
@@ -199,6 +256,11 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 114.42, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
+
 fit <- tryCatch({dpm(wks ~ pre(lag(union)) + union + lag(lwage) + lwage | ed,
            data = wages)}, error = function(x) NULL)
 
@@ -212,6 +274,11 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 116.13, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
+
 fit <- tryCatch({dpm(wks ~ pre(lag(union)) + pre(union) + lag(lwage) + lwage |
                        ed, data = wages)}, error = function(x) NULL)
 
@@ -223,6 +290,11 @@ test_that("Model is accurate", {
   s <- summary(fit)
   expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 74)
   expect_equivalent(s$fitmeasures["chisq"], expected = 111.79, tolerance = 0.01)
+})
+
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
 })
 
 
@@ -243,6 +315,10 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 126.75, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
 
 # Alpha free --------------------------------------------------------------
 
@@ -261,6 +337,11 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 108.73, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
+
 # Y free --------------------------------------------------------------
 
 context("Y free")
@@ -277,6 +358,12 @@ test_that("Model is accurate", {
   expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 66)
   expect_equivalent(s$fitmeasures["chisq"], expected = 108.73, tolerance = 0.01)
 })
+
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
+
 # X free --------------------------------------------------------------
 
 context("X free")
@@ -294,3 +381,7 @@ test_that("Model is accurate", {
   expect_equivalent(s$fitmeasures["chisq"], expected = 98.66, tolerance = 0.01)
 })
 
+test_that("Summary produces output", {
+  s <- summary(fit)
+  expect_output(print(s))
+})
