@@ -281,13 +281,14 @@ setMethod("summary", "dpm",
            "pvalue" = "p")
   }))
 
-  # if ("p" %in% which_cols) {which_cols <- c(which_cols, "")}
-  #
+  which_cols <- c("lhs", which_cols)
+  which_coefs <- c("lhs", which_coefs)
+
   # Cut out some of the extraneous info
-  if (a$y.free == FALSE) {
+  if (is_false(a$y.free) & is_false(a$x.free)) {
     fixed_coefs <- fixed_coefs[!duplicated(fixed_coefs[,"label"]), which_coefs]
   } else {
-    fixed_coefs <- fixed_coefs[!duplicated(fixed_coefs[,"label"]), which_coefs]
+    fixed_coefs <- fixed_coefs[fixed_coefs[,"op"] == "~", which_coefs]
   }
 
   pretty_names <- c(a$var_coefs$var)
@@ -311,44 +312,48 @@ setMethod("summary", "dpm",
   }
 
   # Get table of lagged y for each wave
-  if (a$y.free == TRUE) {
-    y_coefs <- coefs[coefs$label == "" & coefs$op == "~", c("lhs", which_coefs)]
-    fixed_coefs <- fixed_coefs[fixed_coefs$label != "", ]
-  }
+  # if (a$y.free == TRUE) {
+  #   y_coefs <- coefs[coefs$label == "" & coefs$op == "~", c("lhs", which_coefs)]
+  #   fixed_coefs <- fixed_coefs[fixed_coefs$label != "", ]
+  # }
 
   coeft <- as.data.frame(fixed_coefs[,which_coefs])
+#
+#   if (a$y.free == TRUE) {
+#     y_coeft <- as.data.frame(y_coefs[,c("lhs", which_coefs)])
+#   }
 
-  if (a$y.free == TRUE) {
-    y_coeft <- as.data.frame(y_coefs[,c("lhs", which_coefs)])
-  }
+  coeft <- coeft %not% c("label")
+  # if (a$y.free == TRUE) {
+  #   y_coeft <- y_coeft[,colnames(y_coeft) %nin% "label"]
+  # }
 
-  coeft <- coeft[,colnames(coeft) %nin% "label"]
-  if (a$y.free == TRUE) {
-    y_coeft <- y_coeft[,colnames(y_coeft) %nin% "label"]
-  }
-
-  rownames(coeft) <-
+  coeft$coef <-
     a$var_coefs$pretty_name[sapply(fixed_coefs[,"label"], function(x) {
       which(a$var_coefs$coef == x)
     })]
-  colnames(coeft) <- which_cols
+  colnames(coeft) <- c(which_cols, "coef")
   coeft <- as.data.frame(coeft)
+
+  coeft$lhs <- gsub(paste0(a$dv, "_"), "", coeft$lhs, fixed = TRUE)
+  names(coeft) %just% "lhs" <- "t"
+
   # coeft <- round_df_char(coeft, digits)
 
-  if (a$y.free == TRUE) {
-    rns <- a$var_coefs$pretty_name[sapply(y_coefs[,"label"], function(x) {
-      which(a$var_coefs$coef == x)
-    })]
-    rns <- paste0(rns, " [t = ",
-                  stringr::str_extract(y_coeft[,"lhs"], "(?<=_)[0-9]"), "]")
-    rownames(y_coeft) <- rns
-    y_coeft <- y_coeft[, colnames(y_coeft) %nin% "lhs"]
-    colnames(y_coeft) <- which_cols
-    y_coeft <- as.data.frame(y_coeft)
-    # y_coeft <- round_df_char(y_coeft, digits)
-  }
+  # if (a$y.free == TRUE) {
+  #   rns <- a$var_coefs$pretty_name[sapply(y_coefs[,"label"], function(x) {
+  #     which(a$var_coefs$coef == x)
+  #   })]
+  #   rns <- paste0(rns, " [t = ",
+  #                 stringr::str_extract(y_coeft[,"lhs"], "(?<=_)[0-9]"), "]")
+  #   rownames(y_coeft) <- rns
+  #   y_coeft <- y_coeft[, colnames(y_coeft) %nin% "lhs"]
+  #   colnames(y_coeft) <- which_cols
+  #   y_coeft <- as.data.frame(y_coeft)
+  #   # y_coeft <- round_df_char(y_coeft, digits)
+  # }
 
-  if (a$y.free == FALSE) {y_coeft <- NULL}
+  # if (a$y.free == FALSE) {y_coeft <- NULL}
 
   converged <- lavaan::lavInspect(object, what = "converged")
   iters <- lavaan::lavInspect(object, what = "iterations")
@@ -356,17 +361,17 @@ setMethod("summary", "dpm",
   fitms <- lavaan::fitmeasures(object)
   fitms <- round(fitms, digits)
 
-  out <- list(coefficients = coeft, model = object, fitmeasures = fitms,
-              ylag_coefficients = y_coeft)
+  out <- list(coefficients = coeft, model = object, fitmeasures = fitms)
   class(out) <- "summary.dpm"
   out <- structure(out, dv = a$dv, tot_obs = a$tot_obs,
                    complete_obs = a$complete_obs, start = a$start, end = a$end,
                    converged = converged, iters = iters, y.free = a$y.free,
-                   digits = digits, pvalue = pvalue)
+                   x.free = a$x.free, digits = digits, pvalue = pvalue)
   return(out)
 
 })
 
+#' @importFrom crayon inverse
 #' @export
 
 print.summary.dpm <- function(x, ...) {
@@ -395,41 +400,23 @@ print.summary.dpm <- function(x, ...) {
       " = ", fitms["rmsea.pvalue"], "\n", sep = "")
   cat(italic("SRMR"), "=", fitms["srmr"], "\n\n")
 
-  if (!is.null(x$ylag_coefficients)) {
-    coeft <- rbind(coeft, x$ylag_coefficients)
-  }
+  # if (!is.null(x$ylag_coefficients)) {
+  #   coeft <- rbind(coeft, x$ylag_coefficients)
+  # }
 
-  coeft <- round_df_char(coeft, digits = a$digits)
-
-  if (a$pvalue == TRUE) {
-    pvals <- as.numeric(coeft[,"p"])
-    coeft[,ncol(coeft) + 1] <- NA
-
-    sigstars <- c()
-    for (y in 1:nrow(coeft)) {
-      sigstars[y] <- get_stars(pvals[y])
+  if (!is_false(a$y.free) | !is_false(a$x.free)) {
+    coeft <- split(coeft, coeft$t)
+    for (i in 1:length(coeft)) {
+      cat(inverse("t = ", names(coeft)[i], "\n", sep = ""))
+      rownames(coeft[[i]]) <- coeft[[i]][["coef"]]
+      print(md_table(coeft[[i]] %not% c("t", "coef"), digits = a$digits))
+      cat("\n")
     }
-
-    coeft[,ncol(coeft)] <- sigstars
-    names(coeft)[ncol(coeft)] <- ""
-
-    if (a$y.free) {
-      pvals <- ylag_coefficients[,"p"]
-
-      sigstars <- c()
-      for (y in 1:nrow(ylag_coefficients)) {
-        sigstars[y] <- get_stars(pvals[y])
-      }
-
-      ylag_coefficients[,ncol(ylag_coefficients) + 1] <- sigstars
-      names(ylag_coefficients)[ncol(ylag_coefficients)] <- ""
-    }
-
+  } else {
+    rownames(coeft) <- coeft$coef
+    print(md_table(coeft %not% c("t", "coef"), digits = a$digits))
+    cat("\n")
   }
-
-  print(coeft)
-
-  cat("\n")
 
   if (a$converged == TRUE) {
     cat("Model converged after", a$iters, "iterations\n")
@@ -553,12 +540,13 @@ tidy.dpm <- function(x, conf.int = FALSE, conf.level = .95, ...) {
 
   s <- summary(x, ci = conf.int, ci.level = conf.level, ...)
   coefs <- s$coefficients
-  coefs$term <- rownames(coefs)
+  coefs$term <- coefs$coef
   coefs$estimate <- coefs[,"Est."]
   coefs$std.error <- coefs[,"S.E."]
   coefs$statistic <- coefs[,"z val."]
   coefs$p.value <- coefs[,"p"]
-  keep_cols <- c("term", "estimate", "std.error", "statistic", "p.value")
+  keep_cols <- c("term", "estimate", "std.error", "statistic", "p.value", "t")
+  if (length(unique(coefs$t)) == 1) coefs$t <- NA
 
   if (conf.int == TRUE) {
     coefs$conf.low <- coefs[, stringr::str_detect(names(coefs), "%")][,1]
