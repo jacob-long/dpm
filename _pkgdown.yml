@@ -2,6 +2,14 @@ template:
   params:
     bootswatch: cosmo
 
+authors:
+  Jacob A. Long:
+    href: https://jacob-long.com
+  Richard A. Williams:
+    href: https://www3.nd.edu/~rwilliam/
+  Paul D. Allison:
+    href: https://statisticalhorizons.com/our-instructors/paul-allison
+
 navbar:
   type: inverse
   left:
