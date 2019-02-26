@@ -1,4 +1,14 @@
-# dpm 1.1.0.9000
+# dpm 1.1.1.9000
+
+## Bug fixes:
+* Fixed a bug that caused an error when printing summaries for models with 
+`y.free = TRUE`.
+
+## Feature updates:
+* `dpm()` now has the `x.free` argument, which can allow predictor variables
+to have coefficients that vary by wave.
+
+# dpm 1.1.0
 
 This release contains several important updates and a 1.1.x release is
 likely to be the one submitted to CRAN.
@@ -44,7 +54,7 @@ The `summary` method now has more options and is more similar to `lavaan`'s
 summary in that regard. Of course, the summary output is much cleaner and 
 more succinct.
 
-The following arguments have been added to `dpm`:
+The following arguments have been added to `dpm()`:
 
 * `y.lag`: Equivalent to `xtdpdml`'s `ylag`. Specify which lags of the DV to 
 use.
