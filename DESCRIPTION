@@ -27,6 +27,7 @@ Imports: panelr,
     stringr,
     rlang,
     crayon,
+    Formula,
     jtools (>= 2.0.0), 
     stats4
 Suggests: broom,

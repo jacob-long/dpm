@@ -1,3 +1,6 @@
+# Tells S4 that I'm using an S3 class for the formula slot
+setOldClass("Formula")
+
 #### dpm class ##################################
 #' @title Dynamic Panel Model (`dpm`) class
 #' @description Models fit using [dpm()] return values of this class, which
@@ -12,6 +15,7 @@ setClass("dpm",
          contains = "lavaan",
          slots = c("call_info" = "list",
                    "call" = "call",
+                   "formula" = "Formula",
                    "mod_string" = "character",
                    "wide_data" = "data.frame")
 )

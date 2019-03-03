@@ -202,6 +202,7 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   out@mod_string <- model$model
   out@wide_data <- model$data
   out@call <- sys.call()
+  out@formula <- Formula::Formula(formula)
 
   out@call_info <- list(out, dv = pf$dv, tot_obs = nobs_o,
                         complete_obs = model$complete_obs, endogs = pf$endogs,
@@ -509,6 +510,14 @@ setMethod("coef", "dpm", function(object) {
   out <- summary(object)$coefficients[,"Est."]
   names(out) <- rownames(summary(object)$coefficients)
   return(out)
+})
+
+#' @export
+#' @importFrom stats formula
+#' @rdname dpm-methods
+
+setMethod("formula", "dpm", function(x) {
+  return(x@formula)
 })
 
 ##### lavaaan summary methods #################################################
