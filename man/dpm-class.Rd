@@ -17,7 +17,9 @@ inherits from \code{\link[lavaan]{lavaan-class}}.
 
 \item{\code{mod_string}}{The model formula passed to \code{lavaan}.}
 
-\item{\code{wide_data}}{The data provided to the \code{data} argument in the function
+\item{\code{wide_data}}{The data provided to the \code{data} argument in the function}
+
+\item{\code{formula}}{The \code{\link[Formula:Formula]{Formula::Formula()}} object provided to \code{\link[=dpm]{dpm()}}.
 call.}
 }}
 

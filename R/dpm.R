@@ -435,17 +435,19 @@ print.summary.dpm <- function(x, ...) {
 
 ##### Other methods ###########################################################
 
+#' @rdname dpm-methods
 #' @export
 setGeneric("update")
 
 #' @title Various methods for `dpm` objects
 #' @description R likes it when these things have documentation.
 #' @param object A `dpm` object
+#' @param x A `dpm` object
 #' @param formula. An updated formula (optional)
 #' @param evaluate If updating, should the updated model be updated or just
 #'  return the call? Default is TRUE, re-run the model.
 #' @param ... Other arguments to update.
-#' @export
+#' @method update dpm
 #' @import methods
 #' @importFrom stats formula getCall update.formula update
 #' @rdname dpm-methods
@@ -515,10 +517,12 @@ setMethod("show", "dpm", function(object) {
 
 })
 
+#' @rdname dpm-methods
 #' @export
 setGeneric("coef")
 
-#' @export
+#' @rdname dpm-methods
+#' @method coef dpm
 coef.dpm <- function(object) {
   out <- summary(object)$coefficients[,"Est."]
   names(out) <- summary(object)$coefficients$coef
@@ -534,7 +538,7 @@ setMethod("coef", "dpm", coef.dpm)
 #' @export
 setGeneric("formula")
 
-#' @export
+#' @method formula dpm
 formula.dpm <- function(x) {
   return(x@formula)
 }

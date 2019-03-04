@@ -9,6 +9,7 @@ setOldClass("Formula")
 #' @slot call The actual function call.
 #' @slot mod_string The model formula passed to `lavaan`.
 #' @slot wide_data The data provided to the `data` argument in the function
+#' @slot formula The [Formula::Formula()] object provided to [dpm()].
 #'  call.
 #' @export
 setClass("dpm",
