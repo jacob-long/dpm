@@ -1,4 +1,4 @@
-# dpm 1.1.1.9000
+# dpm 1.1.1
 
 ## Bug fixes:
 * Fixed a bug that caused an error when printing summaries for models with 
@@ -7,6 +7,9 @@
 ## Feature updates:
 * `dpm()` now has the `x.free` argument, which can allow predictor variables
 to have coefficients that vary by wave.
+* `dpm` objects now have a `glance()` method for the `broom` package.
+* You can now get wave-by-wave coefficient tables when either `x.free` or 
+`y.free` are used with `dpm()`.
 
 # dpm 1.1.0
 

@@ -1,7 +1,7 @@
 Package: dpm
 Type: Package
 Title: Dynamic Panel Models Fit with Maximum Likelihood
-Version: 1.1.1.9000
+Version: 1.1.1
 Authors@R: c(person(given = "Jacob A.",
   family = "Long", email = "long.1377@osu.edu", 
   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1582-6214")),
