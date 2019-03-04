@@ -113,6 +113,8 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                 x.free = FALSE, fixed.effects = TRUE, print.only = FALSE,
                 id = NULL, wave = NULL, err.inv = NULL, ...) {
 
+  formula <- Formula::Formula(formula)
+
   # Check data integrity
   if (!is_panel(data)) {
 
@@ -433,6 +435,9 @@ print.summary.dpm <- function(x, ...) {
 
 ##### Other methods ###########################################################
 
+#' @export
+setGeneric("update")
+
 #' @title Various methods for `dpm` objects
 #' @description R likes it when these things have documentation.
 #' @param object A `dpm` object
@@ -441,19 +446,19 @@ print.summary.dpm <- function(x, ...) {
 #'  return the call? Default is TRUE, re-run the model.
 #' @param ... Other arguments to update.
 #' @export
+#' @import methods
 #' @importFrom stats formula getCall update.formula update
 #' @rdname dpm-methods
-# Just a duplicate of the default update method, but I need it here since
+# Almost a duplicate of the default update method, but I need it here since
 # lavaan has implemented a different method
 
-setMethod("update", signature(object = "dpm"),
-          function(object, formula., ..., evaluate = TRUE) {
+update.dpm <- function(object, formula., ..., evaluate = TRUE) {
 
-  call <- getCall(object)
+  call <- match.call(dpm, getCall(object))
   extras <- match.call(expand.dots = FALSE)$...
 
   if (!missing(formula.)) {
-    call$formula <- update.formula(formula(object), formula.)
+    call$formula <- update(formula(object), formula.)
   }
 
   if (length(extras)) {
@@ -467,7 +472,11 @@ setMethod("update", signature(object = "dpm"),
 
   if (evaluate) {eval(call, parent.frame())} else {call}
 
-})
+}
+
+#' @rdname dpm-methods
+#' @export
+setMethod("update", "dpm", update.dpm)
 
 #' @export
 #' @importFrom methods show
@@ -507,22 +516,34 @@ setMethod("show", "dpm", function(object) {
 })
 
 #' @export
-#' @importFrom stats coef
-#' @rdname dpm-methods
+setGeneric("coef")
 
-setMethod("coef", signature(object = "dpm"), function(object) {
+#' @export
+coef.dpm <- function(object) {
   out <- summary(object)$coefficients[,"Est."]
   names(out) <- summary(object)$coefficients$coef
   return(out)
-})
+}
+
+#' @export
+#' @importFrom stats coef
+#' @rdname dpm-methods
+
+setMethod("coef", "dpm", coef.dpm)
+
+#' @export
+setGeneric("formula")
+
+#' @export
+formula.dpm <- function(x) {
+  return(x@formula)
+}
 
 #' @export
 #' @importFrom stats formula
 #' @rdname dpm-methods
 
-setMethod("formula", "dpm", function(x) {
-  return(x@formula)
-})
+setMethod("formula", "dpm", formula.dpm)
 
 ##### lavaaan summary methods #################################################
 

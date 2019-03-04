@@ -44,5 +44,5 @@ test_that("dpm coef method works", {
 
 test_that("dpm update method works", {
   fit <- dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages)
-  expect_s4_class(update(fit, . ~ . - ed), "dpm")
+  expect_s4_class(update(fit, . ~ . - lag(lwage), data = wages), "dpm")
 })
