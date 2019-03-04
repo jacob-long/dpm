@@ -19,7 +19,13 @@
 #'   fit <- dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages)
 #'   tidy(fit)
 #' }
-#' @export tidy.dpm
+#' @rdname dpm_tidiers
+#' @rawNamespace
+#' if (getRversion() >= "3.6.0") {
+#'   S3method(broom::tidy, dpm)
+#' } else {
+#'   export(tidy.dpm)
+#' }
 #'
 
 tidy.dpm <- function(x, conf.int = FALSE, conf.level = .95, ...) {
@@ -48,3 +54,27 @@ tidy.dpm <- function(x, conf.int = FALSE, conf.level = .95, ...) {
   }
 
 }
+
+#' @rdname dpm_tidiers
+#' @rawNamespace
+#' if (getRversion() >= "3.6.0") {
+#'   S3method(broom::glance, dpm)
+#' } else {
+#'   export(glance.dpm)
+#' }
+
+glance.dpm <- function(x, ...) {
+  s <- summary(x)$fitmeasures
+  the_names <- c("df", "chisq", "ntotal", "rmsea", "rmsea.ci.lower",
+                 "rmsea.ci.upper", "rmsea.pvalue", "srmr")
+  values <- s[the_names]
+  names(values) %just% "ntotal" <- "N"
+  df <- t(as.data.frame(values))
+  if (requireNamespace("tibble")) {
+    df <- tibble::as_tibble(df, rownames = NULL)
+  } else {
+    rownames(df) <- NULL
+  }
+  return(df)
+}
+
