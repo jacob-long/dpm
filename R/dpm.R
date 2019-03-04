@@ -510,9 +510,9 @@ setMethod("show", "dpm", function(object) {
 #' @importFrom stats coef
 #' @rdname dpm-methods
 
-setMethod("coef", "dpm", function(object) {
+setMethod("coef", signature(object = "dpm"), function(object) {
   out <- summary(object)$coefficients[,"Est."]
-  names(out) <- rownames(summary(object)$coefficients)
+  names(out) <- summary(object)$coefficients$coef
   return(out)
 })
 

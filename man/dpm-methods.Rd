@@ -5,6 +5,7 @@
 \alias{update,dpm-method}
 \alias{show,dpm-method}
 \alias{coef,dpm-method}
+\alias{formula,dpm-method}
 \title{Various methods for \code{dpm} objects}
 \usage{
 \S4method{update}{dpm}(object, formula., ..., evaluate = TRUE)
@@ -12,6 +13,8 @@
 \S4method{show}{dpm}(object)
 
 \S4method{coef}{dpm}(object)
+
+\S4method{formula}{dpm}(x)
 }
 \arguments{
 \item{object}{A \code{dpm} object}
