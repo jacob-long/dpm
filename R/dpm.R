@@ -410,12 +410,16 @@ print.summary.dpm <- function(x, ...) {
     for (i in 1:length(coeft)) {
       cat(inverse("t = ", names(coeft)[i], "\n", sep = ""))
       rownames(coeft[[i]]) <- coeft[[i]][["coef"]]
-      print(md_table(coeft[[i]] %not% c("t", "coef"), digits = a$digits))
+      print(md_table(coeft[[i]] %not% c("t", "coef"), digits = a$digits,
+                     sig.digits = FALSE,
+                     format = getOption("dpm.table.format", "markdown")))
       cat("\n")
     }
   } else {
     rownames(coeft) <- coeft$coef
-    print(md_table(coeft %not% c("t", "coef"), digits = a$digits))
+    print(md_table(coeft %not% c("t", "coef"), digits = a$digits,
+                   sig.digits = FALSE,
+                   format = getOption("dpm.table.format", "markdown")))
     cat("\n")
   }
 
