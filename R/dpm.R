@@ -134,6 +134,16 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
 
   }
 
+  # Deal with non-numeric wave variables
+  if (!is.numeric(data[[wave]])) {
+    periods <- unique(data[[wave]])
+    data[[wave]] <- as.numeric(data[[wave]])
+  } else {
+    # Coerce to 1-2-3-4-5 etc.
+    periods <- unique(data[[wave]])
+    data[[wave]] <- as.numeric(as.factor(data[[wave]]))
+  }
+
   # Catch deprecated arg.
   if (!is.null(err.inv)) {
     error.inv <- err.inv
@@ -208,7 +218,8 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
 
   out@call_info <- list(out, dv = pf$dv, tot_obs = nobs_o,
                         complete_obs = model$complete_obs, endogs = pf$endogs,
-                        exogs = pf$exogs, start = model$start, end = model$end,
+                        exogs = pf$exogs, start = periods[model$start],
+                        end = periods[model$end],
                         y.lag = y.lag, var_coefs = model$var_coefs,
                         y.free = y.free, x.free = x.free,
                         fixed.effects = fixed.effects,
