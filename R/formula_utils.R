@@ -1,3 +1,4 @@
+#' @importFrom stats drop.terms reformulate
 # Accessor function for Formula objects that have multiple parts
 get_rhs <- function(x, which = 1, to.formula = FALSE) {
   # Coercing to formula can be useful, otherwise it's a call object
@@ -161,10 +162,6 @@ expand_interactions <- function(x) {
   if (!is.null(ranefs)) {
     ranefs <- if (is.list(ranefs)) sapply(ranefs, to_char) else to_char(ranefs)
     ranefs <- stringr::str_replace_all(ranefs, "~", "")
-  }
-  if (length(attr(x, "rhs")) >= 3) {
-    # Remove ranefs from formula for now
-    attr(x, "rhs")[[3]] <- lme4::nobars(attr(x, "rhs")[[3]])
   }
 
   for (i in seq_along(attr(x, "rhs"))) {

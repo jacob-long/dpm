@@ -77,3 +77,7 @@ bt <- function(x) {
   } else btv <- NULL
   return(btv)
 }
+
+un_bt <- function(x) {
+  gsub("`", "", x)
+}

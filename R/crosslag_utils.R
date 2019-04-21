@@ -11,7 +11,6 @@ formula_parser <- function(formula, dv, data) {
     vars <-
       names(sapply(all.vars(formula),
                    function(x) is.numeric(data[[x]])) %just% FALSE)
-    vars <- vars %not% grouping_vars
     # Expand these factors into 0/1 variables in the data
     data <- expand_factors(vars, data)
     # Now create a formula that does the same
