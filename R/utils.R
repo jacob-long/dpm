@@ -48,3 +48,32 @@ concat2 <- function(input) {
   return(input[length(input)])
 
 }
+
+make_names <- function(names, int = FALSE) {
+  # Ensure valid leading character
+  names <- sub('^[^A-Za-z\\.]+', '.', names)
+  # See where dots were originally
+  dots <- lapply(names, function(x) which(strsplit(x, NULL)[[1]] == "."))
+  if (int == TRUE) {
+    names <- gsub(":|\\*", "_by_", names)
+  }
+  # Use make.names
+  names <- make.names(names, allow_ = TRUE)
+  # substitute _ for .
+  names <- gsub( '\\.', '_', names )
+  # Now add the original periods back in
+  mapply(names, dots, FUN = function(x, y) {
+    x <- strsplit(x, NULL)[[1]]
+    x[y] <- "."
+    paste0(x, collapse = "")
+  })
+}
+
+bt <- function(x) {
+  if (!is.null(x)) {
+    btv <- paste0("`", x, "`")
+    btv <- gsub("``", "`", btv, fixed = TRUE)
+    btv <- btv %not% c("", "`")
+  } else btv <- NULL
+  return(btv)
+}

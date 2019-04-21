@@ -114,24 +114,20 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                 id = NULL, wave = NULL, err.inv = NULL, ...) {
 
   formula <- Formula::Formula(formula)
+  dv <- as.character((attr(formula, "lhs")))
 
   # Check data integrity
   if (!is_panel(data)) {
+    if (!is.data.frame(data)) {
+      stop_wrap("data argument must be a data frame.")
+    }
 
-      if (!is.data.frame(data)) {
-        stop_wrap("data argument must be a data frame.")
-      }
-
-      id <- as_name(enexpr(id))
-      wave <- as_name(enexpr(wave))
-
-      data <- panelr::panel_data(data, !! sym(id), !! sym(wave))
-
+    id <- as_name(enexpr(id))
+    wave <- as_name(enexpr(wave))
+    data <- panelr::panel_data(data, !! sym(id), !! sym(wave))
   } else {
-
     wave <- panelr::get_wave(data)
     id <- panelr::get_id(data)
-
   }
 
   # Deal with non-numeric wave variables
@@ -151,28 +147,28 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   }
 
   # Helper function to get info from model formula
-  pf <- cl_formula_parser(formula)
+  pf <- formula_parser(formula, dv, data)
 
-  # Helper function gets info about lag specification
-  mf <- panel_model_frame(pf$allvars, data)
-
+  # Need to add interaction variables to data frame before calling model_frame
+  if (length(pf$wint_labs) > 0 | length(pf$cint_labs) > 0 |
+      length(pf$bint_labs) > 0) {
+    for (int in c(pf$wint_labs, pf$cint_labs, pf$bint_labs)) {
+      new_name <- make_names(int, TRUE)
+      pf$data <- dplyr::mutate(pf$data, !! new_name := !! rlang::parse_expr(int))
+      pf$allvars <- c(pf$allvars, new_name)
+    }
+  }
   ## Using model_frame to allow for variable transformations in formulae
   # Requires two different strategies depending on presence/absence of lagged
   # variables since panel_model_frame returns different type of object.
-  if ("vars_lags" %in% names(mf)) {
-    form_names <- names(mf$vars_lags)[names(mf$vars_lags) %nin% c(id, wave)]
-    mod_formula <- paste("~", paste(form_names, collapse = " + "))
-    mod_formula <- as.formula(mod_formula)
-    mf$data <- panelr::model_frame(mod_formula, data = mf$data)
-  } else {
-    mod_formula <- paste("~", paste(pf$allvars, collapse = " + "))
-    mod_formula <- as.formula(mod_formula)
-    mf <- panelr::model_frame(mod_formula, data = mf)
-  }
+  mod_formula <- paste("~", paste(pf$allvars, collapse = " + "))
+  mod_formula <- as.formula(mod_formula)
+  mf <- panelr::model_frame(mod_formula, data = pf$data)
+  names(mf) %just% pf$v_info$root <- make_names(names(mf) %just% pf$v_info$root)
 
   # Quick little helper
   get_raw_vars <- function(vars) {
-    sapply(pf$allvars, function(x) {all.vars(formula(paste0("~", x)))})
+    sapply(vars, function(x) {all.vars(formula(paste0("~", x)))})
   }
 
   # Checking that the x.free argument is valid
@@ -189,7 +185,7 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   }
 
   # Helper function to write the lavaan syntax
-  model <- model_builder(mf = mf, dv = pf$dv, endogs = pf$endogs,
+  model <- model_builder(mf = mf, pf = pf, dv = dv, endogs = pf$endogs,
                          exogs = pf$exogs,
                          constants = pf$constants, id = id, wave = wave,
                          err.inv = error.inv, const.inv = const.inv,
@@ -216,7 +212,7 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   out@call <- sys.call()
   out@formula <- Formula::Formula(formula)
 
-  out@call_info <- list(out, dv = pf$dv, tot_obs = nobs_o,
+  out@call_info <- list(dv = pf$dv, tot_obs = nobs_o,
                         complete_obs = model$complete_obs, endogs = pf$endogs,
                         exogs = pf$exogs, start = periods[model$start],
                         end = periods[model$end],
@@ -224,7 +220,7 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                         y.free = y.free, x.free = x.free,
                         fixed.effects = fixed.effects,
                         alpha.free = alpha.free, const.inv = const.inv,
-                        error.inv = error.inv)
+                        error.inv = error.inv, v_info = pf$v_info)
 
   return(out)
 
@@ -305,42 +301,30 @@ setMethod("summary", "dpm",
     fixed_coefs <- fixed_coefs[fixed_coefs[,"op"] == "~", which_coefs]
   }
 
-  pretty_names <- c(a$var_coefs$var)
+  # Combine info from variable transformations
+  a$var_coefs <- merge(a$var_coefs, a$v_info, by.y = "new_name", by.x = "var",
+                       suffixes = c("", ".y"), all = TRUE)
+  # Deal with constants not present in v_info
+  a$var_coefs$root[is.na(a$var_coefs$root)] <-
+                                      a$var_coefs$var[is.na(a$var_coefs$root)]
+  # pander can't print *
+  a$var_coefs$root <- gsub("\\*", ":", a$var_coefs$root)
+  # Instantiate pretty names vector
+  pretty_names <- c(a$var_coefs$root)
+  # Create column of pretty names
   a$var_coefs$pretty_name <- NA
-  ts <- 0
   for (i in 1:(length(pretty_names))) {
-
     if (a$var_coefs$lag[i] > 0) {
-
       pretty_names[i] <- paste(pretty_names[i], " (t - ", a$var_coefs$lag[i],
                                ")", sep = "")
       a$var_coefs$pretty_name[i] <- pretty_names[i]
-      ts <- ts + 1
-
     } else {
-
-      a$var_coefs$pretty_name[i] <- a$var_coefs$var[i]
-
+      a$var_coefs$pretty_name[i] <- a$var_coefs$root[i]
     }
-
   }
 
-  # Get table of lagged y for each wave
-  # if (a$y.free == TRUE) {
-  #   y_coefs <- coefs[coefs$label == "" & coefs$op == "~", c("lhs", which_coefs)]
-  #   fixed_coefs <- fixed_coefs[fixed_coefs$label != "", ]
-  # }
-
   coeft <- as.data.frame(fixed_coefs[,which_coefs])
-#
-#   if (a$y.free == TRUE) {
-#     y_coeft <- as.data.frame(y_coefs[,c("lhs", which_coefs)])
-#   }
-
   coeft <- coeft %not% c("label")
-  # if (a$y.free == TRUE) {
-  #   y_coeft <- y_coeft[,colnames(y_coeft) %nin% "label"]
-  # }
 
   coeft$coef <-
     a$var_coefs$pretty_name[sapply(fixed_coefs[,"label"], function(x) {
@@ -351,23 +335,6 @@ setMethod("summary", "dpm",
 
   coeft$lhs <- gsub(paste0(a$dv, "_"), "", coeft$lhs, fixed = TRUE)
   names(coeft) %just% "lhs" <- "t"
-
-  # coeft <- round_df_char(coeft, digits)
-
-  # if (a$y.free == TRUE) {
-  #   rns <- a$var_coefs$pretty_name[sapply(y_coefs[,"label"], function(x) {
-  #     which(a$var_coefs$coef == x)
-  #   })]
-  #   rns <- paste0(rns, " [t = ",
-  #                 stringr::str_extract(y_coeft[,"lhs"], "(?<=_)[0-9]"), "]")
-  #   rownames(y_coeft) <- rns
-  #   y_coeft <- y_coeft[, colnames(y_coeft) %nin% "lhs"]
-  #   colnames(y_coeft) <- which_cols
-  #   y_coeft <- as.data.frame(y_coeft)
-  #   # y_coeft <- round_df_char(y_coeft, digits)
-  # }
-
-  # if (a$y.free == FALSE) {y_coeft <- NULL}
 
   converged <- lavaan::lavInspect(object, what = "converged")
   iters <- lavaan::lavInspect(object, what = "iterations")
@@ -413,10 +380,6 @@ print.summary.dpm <- function(x, ...) {
       ", ", fitms["rmsea.ci.upper"],"]", italic("\np(RMSEA < .05)"),
       " = ", fitms["rmsea.pvalue"], "\n", sep = "")
   cat(italic("SRMR"), "=", fitms["srmr"], "\n\n")
-
-  # if (!is.null(x$ylag_coefficients)) {
-  #   coeft <- rbind(coeft, x$ylag_coefficients)
-  # }
 
   if (!is_false(a$y.free) | !is_false(a$x.free)) {
     coeft <- split(coeft, coeft$t)

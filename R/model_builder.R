@@ -1,47 +1,22 @@
-model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
+model_builder <- function(mf, pf, dv, endogs, exogs, constants, id, wave,
                           err.inv, const.inv, alpha.free, y.lag, y.free, x.free,
                           fixed.effects) {
 
 
 ##### Get lag info ############################################################
 
-  if (is_panel(mf)) {
-
-    d <- mf
-    mf["vars_lags"] <- 0
-    mf["og_terms"] <- NULL
-
-  } else {
-
-    d <- mf$data
-
-  }
+  d <- mf
+  vi <- pf$v_info
 
   # Endogenous predictor lag structure
-  ## Saving info about where in the respective lists the endogenous variables
-  ## and their lag numbers are
-  if (!is.null(endogs)) {
+  if (any(vi$endog)) {
 
-    if (is_panel(mf)) {
-      indices <- NULL
-    } else if (length(mf["og_terms"]) > 0) {
-      indices <- which(names(mf$new_names) %in% endogs)
-    } else {
-      indices <- NULL
-    }
-
+    vi_en <- vi[vi$endog == TRUE, ]
     ## Now going through and saving the number of lags to list for use later
-    endogs_lags <- rep(0, length(endogs))
-    names(endogs_lags) <- endogs
-    if (length(indices) > 0) {
-      endogs <- mf$new_names[indices]
-      endogs_lags <- mf$vars_lags[indices]
-      names(endogs_lags) <- endogs
-      endogs <- unname(endogs)
-    }
+    endogs_lags <- vi_en$lag
+    names(endogs_lags) <- vi_en$new_name
 
-    # endogs <- unlist(endogs)
-    endogs <- unique(endogs)
+    endogs <- unique(vi_en$new_name)
     names(endogs) <- endogs
     endogs_lags <- as.list(endogs_lags)
     if (any(duplicated(names(endogs_lags)))) {
@@ -52,39 +27,20 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
         endogs_lags[[dupe]] <- unname(unlist(values))
       }
     }
-    # endogs <- endogs[!duplicated(endogs)]
 
   } else {
-
     endogs <- NULL
     endogs_lags <- NULL
-
   }
 
+  # Exogenous predictor lag structure
   if (!is.null(exogs)) {
-    # Exogenous predictor lag structure
-    ## Saving info about where in the respective lists the exogenous variables
-    ## and their lag numbers are
-
-    if (is_panel(mf)) {
-      indices <- NULL
-    } else if (length(mf["og_terms"]) > 0) {
-      indices <- which(names(mf$new_names) %in% exogs)
-    } else {
-      indices <- NULL
-    }
-
+    vi_ex <- vi[vi$endog == FALSE, ]
     ## Now going through and saving the number of lags to list for use later
-    exogs_lags <- rep(0, length(exogs))
-    names(exogs_lags) <- exogs
-    if (length(indices) > 0) {
-      exogs <- mf$new_names[indices]
-      exogs_lags <- mf$vars_lags[indices]
-      names(exogs_lags) <- exogs
-      exogs <- unname(exogs)
-    }
+    exogs_lags <- vi_ex$lag
+    names(exogs_lags) <- vi_ex$new_name
 
-    exogs <- unique(exogs)
+    exogs <- unique(vi_ex$new_name)
     names(exogs) <- exogs
     exogs_lags <- as.list(exogs_lags)
     if (any(duplicated(names(exogs_lags)))) {
@@ -97,33 +53,20 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
     }
 
   } else {
-
     exogs <- NULL
     exogs_lags <- NULL
-
   }
 
   # Saving a vector of all variables that are time varying
   varying <- c(unlist(endogs), dv, unlist(exogs))
-#
-#   en_frame <- data.frame(var = endogs, lag = endogs_lags, pre = TRUE)
-#   ex_frame <- data.frame(var = exogs, lag = exogs_lags, pre = FALSE)
 
 ###### Widen data #############################################################
-
-  # If data is already in wide format, for now I just convert to long and back
-  # if (wide_data == TRUE) {
-  #
-  #   d <- lengthen_panel(d)
-  #
-  # }
 
   # Now I need to have the data in wide format
   wframe <- widen_panel_in(d, varying = varying, constants = constants)
 
   # Save info about complete observations
   complete_obs <- attr(wframe, "complete_obs")
-
 
 ###### Model build prep #######################################################
 
@@ -143,13 +86,10 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
   }
 
   # start variable is used to determine which wave to begin with
-  start <- max(c(mf$vars_lags, y.lag)) + 1 # Depends on how many lags we have
+  start <- max(c(pf$v_info$max_lag, y.lag)) + 1 # Depends on how many lags
   # But can't have lagged DV at wave 1 either
   if (start < (min_wave + max(y.lag))) {start <- min_wave + max(y.lag)}
   end <- max_wave
-  # if (start == 0) {
-  #   start <- 1
-  # }
 
   vbywave <- lapply(vbywave, function(x) {
     x <- x[!duplicated(x)]
@@ -160,13 +100,9 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 
   # Let alpha vary across time if user requests
   if (alpha.free == TRUE) {
-
     a_f <- ""
-
   } else { # Otherwise fixed at one
-
     a_f <- "1 * "
-
   }
 
   the_dvs <- sapply(vbywave[ch(start:end)], function(x) {x[dv]})
@@ -199,7 +135,6 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
         vars = endogs, vars_lags = endogs_lags, prefix = "en",
         vbywave = vbywave, w = w, x.free = x.free, var_coefs = var_coefs
       )
-
     }
 
     ## If there are exogenous time varying vars, loop through those
@@ -215,7 +150,6 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
         vars = exogs, vars_lags = exogs_lags, prefix = "ex",
         vbywave = vbywave, w = w, x.free = x.free, var_coefs = var_coefs
       )
-
     }
 
     ## If there are constants, loop through them
@@ -256,7 +190,6 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 
     ## Save finished equation to list (okay, technically a vector)
     main_eqs <- c(main_eqs, reg)
-
   }
   reg <- NULL
   var_coefs <- var_coefs[complete.cases(var_coefs),]
@@ -267,15 +200,6 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 ####### Alpha covariances #####################################################
 
   alpha_reg <- "alpha ~~" # Beginning of equation
-
-  # if (!is.null(exogs)) {
-  #   exogsc <- exogs[!duplicated(exogs)]
-  #   exogs_lagsc <- sort(exogs_lags, decreasing = FALSE)
-  #   exogs_lagsc <- exogs_lagsc[unique(names(exogs_lagsc))]
-  # } else {
-  #   exogsc <- NULL
-  #   exogs_lagsc <- NULL
-  # }
 
   varying_vars <- unique(unlist(list(endogs, exogs), recursive = FALSE))
   varying_lags <- unlist(list(endogs_lags, exogs_lags), recursive = FALSE)
@@ -300,7 +224,6 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
     alpha_vars <- c(alpha_vars,
                     sapply(vbywave[ch(ws)], function(x) {x[var]})
                     )
-
   }
 
   for (w in 1:(which(names(vbywave) == start) - 1)) {
@@ -324,9 +247,6 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
   exogsreg <- NULL
   if (!is.null(exogs)) {
 
-    # exogsc <- exogs[!duplicated(exogs)]
-    # exogs_lagsc <- sort(exogs_lags, decreasing = TRUE)
-    # exogs_lagsc <- exogs_lagsc[unique(names(exogs_lagsc))]
     for (var in exogs) {
 
       exogsreg <- c(exogsreg, vbywave[[ch(start - max(exogs_lags[[var]]))]][var])
@@ -334,11 +254,8 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
       for (w in (start - max(exogs_lags[[var]])):(end - min(exogs_lags[[var]]))) {
         if (w > end) {next}
         exogsreg <- c(exogsreg, vbywave[[ch(w)]][var])
-
       }
-
     }
-
   }
 
   # Creating the constants part of the equations, which obviously doesn't change
@@ -346,11 +263,8 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
   if (!is.null(constants)) {
 
     for (var in constants) {
-
       index <- which(constants == var)
-
       creg <- c(creg, constants[index])
-
     }
 
   }
@@ -401,9 +315,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
         if (start > min_wave + 1) { # This is needed if there is > 1 lag
 
           for (wp in (min_wave + 1):(start - 1)) {
-
             reg <- paste(reg, "+", vbywave[[ch(wp)]][dv])
-
           }
 
         }
@@ -417,9 +329,7 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
 
         ocs <- constants[(which(constants == c) + 1):length(constants)]
         for (oc in ocs) {
-
           reg <- paste(reg, "+", oc)
-
         }
 
       }
@@ -441,66 +351,45 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
     for (w in start:(end - 1)) {
 
       if (w == min_wave && start != min_wave) {next}
-      # if ()
-
       reg <- paste(vbywave[[ch(w)]][dv], " ~~", sep = "")
       reg_vars <- NULL
 
       for (var in endogs) {
 
         w2 <- w + 1
-
         while (w2 <= end - min(endogs_lags[[var]])) {
           if (w2 > end) {next}
-
           reg_vars <- c(reg_vars, vbywave[[ch(w2)]][var])
-
           w2 <- w2 + 1
-
         }
-
       }
 
       if (is.null(reg_vars)) {
-
         # Do nothing because it's an empty equation
-
       } else {
-
         reg <- paste(reg, paste(reg_vars, collapse = " + "))
         endogs_errs <- c(reg, endogs_errs)
-
       }
       reg <- NULL
-
     }
-
   }
 
 ####### DV error variance equations (optional) #################################
 
-
   # If user wants DV error variances for each wave to be held constant, do it
   if (err.inv == TRUE) {
-
     err_var_eqs_ann <- "## Holding DV error variance constant for each wave"
     var_co <- "v*"
-
   } else {
-
     err_var_eqs_ann <- "## DV error variance free to vary across waves"
     var_co <- NULL
-
   }
 
   err_var_eqs <- NULL
   for (w in start:end) {
-
     eq <- paste(vbywave[[ch(w)]][dv], " ~~ ", var_co, vbywave[[ch(w)]][dv], sep = "")
     err_var_eqs <- c(err_var_eqs, eq)
-
   }
-
 
 ###### DV variance constraints #######################################
 
@@ -508,24 +397,18 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
   dv_vars_ann <- NULL
 
   if (const.inv == TRUE) {
-
     dv_vars_ann <- "## Hold DV variance constant each wave (optional)"
     var_co <- "var*"
-
   } else {
-
     dv_vars_ann <- "## Let DV variance vary across waves"
     var_co <- NULL
-
   }
 
   for (w in start:end) {
-
     reg <- paste(vbywave[[ch(w)]][dv], " ~ ", var_co, "1", sep = "")
     # Add finished equation to list
     dv_vars <- c(dv_vars, reg)
     reg <- NULL
-
   }
   reg <- NULL
 
@@ -552,7 +435,6 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
       lag_covs <- c(lag_covs, lag_reg)
       ylags <- ylags[-1]
     }
-
   }
 
 ###### Defining annotations to be used in final model string ##################
@@ -578,7 +460,6 @@ model_builder <- function(mf, dv, endogs, exogs, constants, id, wave,
                   endogs_covs_ann, endogs_covs,
                   exogs_covs_ann, exogs_covs, constants_covs, lag_covs,
                   err_var_eqs_ann, err_var_eqs, dv_vars_ann, dv_vars)
-
 
   # Adding line breaks between the equations
   out <- lapply(all_eqs, concat) # concat is an internal function
