@@ -1,3 +1,18 @@
+# dpm 1.1.2
+
+## Bug fixes:
+* The ability to do arbitrary variable transformations introduced 1.1.0 has
+been made to actually work since `lavaan` does not allow non-syntactic variable
+names.
+
+## Feature updates:
+* Specifying interactions in model formulae is now supported. To make them
+predetermined, just make sure one of the terms has the `pre()` tag surrounding
+it. Do *not* put the entire interaction inside `pre()`.
+
+## Feature updates
+
+
 # dpm 1.1.1
 
 ## Bug fixes:

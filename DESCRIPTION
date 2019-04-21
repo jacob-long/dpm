@@ -1,12 +1,13 @@
 Package: dpm
 Type: Package
 Title: Dynamic Panel Models Fit with Maximum Likelihood
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(person(given = "Jacob A.",
   family = "Long", email = "long.1377@osu.edu", 
   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1582-6214")),
   person(given = "Richard A.", family = "Williams", role = "aut"),
-  person(given = "Paul D.", family = "Allison", role = "aut"))
+  person(given = "Paul D.", family = "Allison", role = "aut",
+  comment = c(ORCID = "0000-0002-0646-5242")))
 Description: Implements the dynamic panel models described by Allison, Williams,
  and Moral-Benito (2017) in R. This class of models uses structural equation 
  modeling to specify dynamic (lagged dependent variable) models with 
