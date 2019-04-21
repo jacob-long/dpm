@@ -302,8 +302,9 @@ setMethod("summary", "dpm",
   }
 
   # Combine info from variable transformations
-  a$var_coefs <- merge(a$var_coefs, a$v_info, by.y = "new_name", by.x = "var",
-                       suffixes = c("", ".y"), all = TRUE)
+  a$var_coefs <- merge(a$var_coefs, a$v_info, by.y = c("new_name", "lag"),
+                       by.x = c("var", "lag"),
+                       suffixes = c("", ".y"), all.x = TRUE)
   # Deal with constants not present in v_info
   a$var_coefs$root[is.na(a$var_coefs$root)] <-
                                       a$var_coefs$var[is.na(a$var_coefs$root)]
