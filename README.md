@@ -118,7 +118,7 @@ summary(fit)
 ```
 
     MODEL INFO:
-    Dependent variable: wks 
+    Dependent variable: 
     Total observations: 595 
     Complete observations: 595 
     Time periods: 2 - 7 
@@ -129,14 +129,12 @@ summary(fit)
     p(RMSEA < .05) = 0.986
     SRMR = 0.025 
     
-    -----------------------------------------------------
-                            Est.    S.E.   z val.       p
-    ------------------- -------- ------- -------- -------
-    union (t - 1)         -1.206   0.522   -2.309   0.021
-    lwage (t - 1)          0.588   0.488    1.204   0.229
-    ed                    -0.107   0.056   -1.893   0.058
-    wks (t - 1)            0.188   0.020    9.586   0.000
-    -----------------------------------------------------
+    |                   |   Est. |  S.E. | z val. |     p |
+    |:------------------|-------:|------:|-------:|------:|
+    | union (t - 1)     | -1.206 | 0.522 | -2.309 | 0.021 |
+    | lwage (t - 1)     |  0.588 | 0.488 |  1.204 | 0.229 |
+    | ed                | -0.107 | 0.056 | -1.893 | 0.058 |
+    | wks (t - 1)       |  0.188 | 0.020 |  9.586 | 0.000 |
     
     Model converged after 603 iterations
 
@@ -314,8 +312,23 @@ accepting any `lavaan::sem` argument.
     to vary across periods. This will make the `summary` output a pain,
     so it will take some time to implement. (added in `1.1.1`)
 
-# Reference
+# References
 
 Allison, P. D., Williams, R., & Moral-Benito, E. (2017). Maximum
 likelihood for cross-lagged panel models with fixed effects. *Socius*,
-*3*, 1-17.
+*3*, 1–17. <https://doi.org/10.1177/2378023117710578>
+
+Leszczensky, L., & Wolbring, T. (2018, August 30). How to deal with
+reverse causality using panel data? Recommendations for researchers
+based on a simulation study. Working paper.
+<https://doi.org/10.31235/osf.io/8xb4z>
+
+Moral-Benito, E., Allison, P., & Williams, R. (2019). Dynamic panel data
+modelling using maximum likelihood: An alternative to Arellano-Bond.
+*Applied Economics*, *51*, 2221–2232.
+<https://doi.org/10.1080/00036846.2018.1540854>
+
+Williams, R., Allison, P. D., & Moral-Benito, E. (2018). Linear dynamic
+panel-data estimation using maximum likelihood and structural equation
+modeling. *The Stata Journal*, *18*, 293–326.
+<https://doi.org/10.1177/1536867X1801800201>
