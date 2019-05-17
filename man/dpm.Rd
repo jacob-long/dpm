@@ -7,7 +7,7 @@
 dpm(formula, data, error.inv = FALSE, const.inv = FALSE,
   alpha.free = FALSE, y.lag = 1, y.free = FALSE, x.free = FALSE,
   fixed.effects = TRUE, print.only = FALSE, id = NULL, wave = NULL,
-  err.inv = NULL, ...)
+  err.inv = NULL, weights = NULL, ...)
 }
 \arguments{
 \item{formula}{Model formula. See details for instructions on specifying
@@ -52,6 +52,10 @@ observation is. Not needed if \code{data} is a "panel_data" object.}
 observation is from. Not needed if \code{data} is a "panel_data" object.}
 
 \item{err.inv}{Deprecated, same purpose as \code{error.inv}.}
+
+\item{weights}{Equivalent to the argument to \code{lm}, presumably the unquoted
+name of a variable in the data that represents the weight. It is passed
+to \code{lavaan()}'s \code{sampling.weights} argument.}
 
 \item{...}{Extra parameters to pass to \code{\link[lavaan]{sem}}. Examples
 could be \code{missing = "fiml"} for missing data or

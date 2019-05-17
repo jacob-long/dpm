@@ -33,6 +33,9 @@
 #' @param print.only Instead of estimating the model, print the \pkg{lavaan}
 #'  model string to the console instead.
 #' @param err.inv Deprecated, same purpose as `error.inv`.
+#' @param weights Equivalent to the argument to `lm`, presumably the unquoted
+#'  name of a variable in the data that represents the weight. It is passed
+#'  to `lavaan()`'s `sampling.weights` argument.
 #' @param ... Extra parameters to pass to \code{\link[lavaan]{sem}}. Examples
 #'  could be \code{missing = "fiml"} for missing data or
 #'  \code{estimator = "MLM"} for robust estimation.
@@ -111,7 +114,7 @@
 dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                 alpha.free = FALSE, y.lag = 1, y.free = FALSE,
                 x.free = FALSE, fixed.effects = TRUE, print.only = FALSE,
-                id = NULL, wave = NULL, err.inv = NULL, ...) {
+                id = NULL, wave = NULL, err.inv = NULL, weights = NULL, ...) {
 
   formula <- Formula::Formula(formula)
   dv <- as.character((attr(formula, "lhs")))
@@ -158,6 +161,15 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
       pf$allvars <- c(pf$allvars, new_name)
     }
   }
+
+  # Get the weights argument like lm() does (can be name or object)
+  weights <- eval_tidy(enquo(weights), pf$data)
+  # Append to data with special name
+  if (!is.null(weights)) {
+    pf$data[".weights"] <- weights
+    pf$allvars <- c(pf$allvars, ".weights")
+  }
+
   ## Using model_frame to allow for variable transformations in formulae
   # Requires two different strategies depending on presence/absence of lagged
   # variables since panel_model_frame returns different type of object.
@@ -191,7 +203,8 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                          err.inv = error.inv, const.inv = const.inv,
                          alpha.free = alpha.free, y.lag = y.lag,
                          y.free = y.free, x.free = x.free,
-                         fixed.effects = fixed.effects)
+                         fixed.effects = fixed.effects,
+                         weights = !is.null(weights))
 
   # If only printing is wanted, just print it and stop
   if (print.only == TRUE) {
@@ -199,8 +212,11 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
     return(invisible(model$model))
   }
 
+  weights_arg <- if (!is.null(weights)) substitute(".weights") else NULL
+
   # Fit the model with lavaan
-  s <- lavaan::sem(model = model$model, data = model$data, ...)
+  s <- lavaan::sem(model = model$model, data = model$data,
+                   sampling.weights = weights_arg, ...)
 
   nobs_o <- length(unique(data[[id]]))
   # nobs_used <- lavaan::lavInspect(s, what = "ntotal")

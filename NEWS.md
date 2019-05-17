@@ -9,9 +9,7 @@ names.
 * Specifying interactions in model formulae is now supported. To make them
 predetermined, just make sure one of the terms has the `pre()` tag surrounding
 it. Do *not* put the entire interaction inside `pre()`.
-
-## Feature updates
-
+* You may now include sampling weights via the `weights` argument.
 
 # dpm 1.1.1
 

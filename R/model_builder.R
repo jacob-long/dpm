@@ -1,6 +1,6 @@
 model_builder <- function(mf, pf, dv, endogs, exogs, constants, id, wave,
                           err.inv, const.inv, alpha.free, y.lag, y.free, x.free,
-                          fixed.effects) {
+                          fixed.effects, weights) {
 
 
 ##### Get lag info ############################################################
@@ -62,8 +62,11 @@ model_builder <- function(mf, pf, dv, endogs, exogs, constants, id, wave,
 
 ###### Widen data #############################################################
 
+  constants_2 <- constants
+  if (weights) constants_2 <- c(constants_2, ".weights")
+
   # Now I need to have the data in wide format
-  wframe <- widen_panel_in(d, varying = varying, constants = constants)
+  wframe <- widen_panel_in(d, varying = varying, constants = constants_2)
 
   # Save info about complete observations
   complete_obs <- attr(wframe, "complete_obs")
@@ -479,7 +482,8 @@ model_builder <- function(mf, pf, dv, endogs, exogs, constants, id, wave,
   }
 
   ret_obj <- list(model = out, data = wframe, complete_obs = complete_obs,
-                  start = start, end = end, var_coefs = var_coefs)
+                  start = start, end = end, var_coefs = var_coefs,
+                  any_weights = !is.null(weights))
   if (!is.null(endogs)) {
     ret_obj$endogs_lags <- endogs_lags
     ret_obj$endogs <- endogs
