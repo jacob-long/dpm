@@ -37,29 +37,22 @@ accessible
 
 # Installation
 
-You will need to the `devtools` package installed to install this
-package from Github as well as its companion package,
-[`panelr`](https://github.com/jacob-long/panelr).
+`dpm` will soon be on CRAN. In the meantime, you can get it from Github.
 
 ``` r
 install.packages("devtools")
-devtools::install_github("jacob-long/panelr")
 devtools::install_github("jacob-long/dpm")
 ```
-
-Also note this package’s other dependencies: `lavaan`, `stringr`,
-`rlang`, and `crayon`, in addition to the dependencies of `panelr` and
-the aforementioned packages.
 
 # Usage
 
 This package assumes your data are in *long* format, with each row
 representing a single observation of a single participant. Contrast this
 with *wide* format in which each row contains all observations of a
-single participant. Better compatibility with wide data will be
-implemented in a future release, but in the meantime you may use the
-`long_panel` function implemented in `panelr` to reshape to long format
-in a relatively pain-free way.
+single participant. For help on converting data from wide to long
+format, check out [the
+tutorial](https://panelr.jacob-long.com/articles/reshape.html) that
+accompanies the `panelr` package.
 
 First we load the package and the `WageData` from `panelr`.
 
@@ -90,18 +83,18 @@ formula consist of two parts, separated with a bar (`|`) like so: `y ~ x
 | z` where z is a time invariant predictor, like ethnicity.
 
 One of the innovations of the method, however, is the notion of
-predetermined, or sequentially exogenous, predictors. To specify a model
-with a predetermined variable, put the variable within a `pre` function,
-`y ~ pre(x1) + x2 | z`. This tells the function that `x1` is
-predetermined while `x2` is strictly exogenous by assumption. You could
-have multiple predetermined predictors as well (e.g., `y ~ pre(x1) +
+pre-determined, or sequentially exogenous, predictors. To specify a
+model with a pre-determined variable, put the variable within a `pre`
+function, `y ~ pre(x1) + x2 | z`. This tells the function that `x1` is
+pre-determined while `x2` is strictly exogenous by assumption. You could
+have multiple pre-determined predictors as well (e.g., `y ~ pre(x1) +
 pre(x2) | z`).
 
-As implied by the “cross-lagged” terminology, you may also fit models
-with lagged predictors. Simply apply the lag function to the lagged
-predictors in the formula: `y ~ pre(lag(x1)) + lag(x2) | z`. To specify
-more than 1 lag, just provide it as an argument. For instance, `y ~
-pre(lag(x1, 2)) + lag(x2) | z` will use 2 lags of the `x1` variable.
+You may also fit models with lagged predictors. Simply apply the lag
+function to the lagged predictors in the formula: `y ~ pre(lag(x1)) +
+lag(x2) | z`. To specify more than 1 lag, just provide it as an
+argument. For instance, `y ~ pre(lag(x1, 2)) + lag(x2) | z` will use 2
+lags of the `x1` variable.
 
 ## *Socius* article example
 
@@ -118,7 +111,7 @@ summary(fit)
 ```
 
     MODEL INFO:
-    Dependent variable: 
+    Dependent variable: wks 
     Total observations: 595 
     Complete observations: 595 
     Time periods: 2 - 7 
@@ -161,6 +154,11 @@ specification:
   - `y.free`: This allows the regression coefficent of the lagged DV to
     vary across time. It is FALSE by default and you can either set it
     to TRUE or to the specific lag number(s).
+  - `x.free`: This allows the regression coefficients for the predictors
+    to vary across time. It is FALSE by default and you can either set
+    it to TRUE to set all predictors’ coefficients free over time or
+    else pass a vector of strings of the predictors whose coefficients
+    should be set free over time.
   - `alpha.free`: If TRUE, relaxes the constraint that the fixed effects
     are equal across time. Default is FALSE to be consistent with how
     fixed effects models normally work.
@@ -276,7 +274,7 @@ Take advantage of `lavaan`’s missing data handling by using the `missing
   - ~~You cannot use multiple lags of the same predictor (e.g., `y ~ x +
     lag(x)`).~~ (Fixed in `1.0.0`)
   - The function does not yet support input data that is already in wide
-    format.
+    format. (Not planning to fix)
   - ~~You cannot apply arbitrary functions to variables in the formula
     like you can with regression models. For instance, a specification
     like `y ~ scale(x)` will cause an error.~~ (Works as of `1.1.0`)
@@ -298,7 +296,7 @@ in terms of matching relevant `xtdpdml` options:
   - [x] `dryrun` (as `print.only`)
 
 Many and perhaps more SEM fitting options are implemented by virtue of
-accepting any `lavaan::sem` argument.
+accepting any `lavaan::sem()` argument.
 
 ## Roadmap
 
