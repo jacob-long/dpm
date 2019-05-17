@@ -13,12 +13,13 @@
 #' @param error.inv Constrain the error variance to be equal across waves.
 #'  Default is FALSE.
 #' @param const.inv Constrain the dependent variable's variance to be equal
-#'  across waves. This removes cross-sectional dependence. Default is FALSE.
+#'  across waves (or makes its intercept equal across waves).
+#'  This removes cross-sectional dependence. Default is FALSE.
 #' @param alpha.free Estimate each wave of the dependent variable's loading on
 #'  the alpha latent variable. Default is FALSE, meaning each wave has a loading
 #'  of 1.
 #' @param y.lag Which lag(s) of the dependent variable to include in the
-#'  regression. Default is 1, but any number of vector of numbers can be used.
+#'  regression. Default is 1, but any number or vector of numbers can be used.
 #' @param y.free If TRUE, allows the regression coefficient(s) for the lagged
 #'  dependent variable to vary over time. Default is FALSE. You may alternately
 #'  provide a number or vector of numbers corresponding to which lags should
@@ -51,6 +52,10 @@
 #'  You must include time-varying predictors. If you do not include a bar
 #'  in the formula, all variables are treated as time-varying.
 #'
+#'  If you would like to include an interaction between time-varying and
+#'  time-invariant predictors, you can add a third part to the formula to
+#'  specify that term.
+#'
 #'  \emph{Predetermined variables}:
 #'
 #'  To set a variable as predetermined, or weakly exogenous, surround the
@@ -62,7 +67,12 @@
 #'
 #'  To lag a predictor, surround the variable with a \code{lag} function in
 #'  the same way. Note that the lag function used is specific to this package,
-#'  so it does not work the same way as the built-in lag function.
+#'  so it does not work the same way as the built-in lag function (i.e., it
+#'  understands that you can only lag values *within* entities).
+#'
+#'  **Note**: CFI and TLI model fit measures for these models should not be
+#'  used. They are anti-conservative compared to other implementations and
+#'  we have not yet figured out how to get more plausible values.
 #'
 #'
 #' @return An object of class `dpm` which has its own \code{summary} method.
@@ -79,8 +89,8 @@
 #'
 #'  }
 #'
-#' @author Jacob A. Long, in consultation with Richard A. Williams. All errors
-#'  are Jacob's.
+#' @author Jacob A. Long, in consultation with Richard A. Williams and
+#'  Paul D. Allison. All errors are Jacob's.
 #'
 #' @references
 #'
@@ -438,6 +448,15 @@ setGeneric("update")
 #' @param evaluate If updating, should the updated model be updated or just
 #'  return the call? Default is TRUE, re-run the model.
 #' @param ... Other arguments to update.
+#' @examples
+#'
+#' data("WageData", package = "panelr")
+#' wages <- panel_data(WageData, id = id, wave = t)
+#' fit <- dpm(wks ~ pre(lag(union)) + lag(lwage), data = wages)
+#'
+#' # Re-run model without `lag(lwage)` term
+#' update(fit, . ~ . - lag(lwage))
+#'
 #' @method update dpm
 #' @import methods
 #' @importFrom stats formula getCall update.formula update
@@ -573,6 +592,13 @@ lav_summary <- function(x, ...) {
 #' @description This helper function provides a simple way to retrieve the
 #'  widened data from a fitted [dpm::dpm()] object.
 #' @param model A `dpm` object.
+#' @examples
+#'
+#' data("WageData", package = "panelr")
+#' wages <- panel_data(WageData, id = id, wave = t)
+#' fit <- dpm(wks ~ pre(lag(union)) + lag(lwage), data = wages)
+#' get_wide_data(fit)
+#'
 #' @export
 get_wide_data <- function(model) {
   model@wide_data
@@ -584,6 +610,13 @@ get_wide_data <- function(model) {
 #' @param model A `dpm` object.
 #' @param print Print the syntax to the console so it is formatted properly?
 #'  Default is TRUE.
+#' @examples
+#'
+#' data("WageData", package = "panelr")
+#' wages <- panel_data(WageData, id = id, wave = t)
+#' fit <- dpm(wks ~ pre(lag(union)) + lag(lwage), data = wages)
+#' get_syntax(fit)
+#'
 #' @export
 get_syntax <- function(model, print = TRUE) {
   if (print) {cat(model@mod_string)}

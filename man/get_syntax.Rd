@@ -16,3 +16,11 @@ Default is TRUE.}
 This helper function provides a simple way to retrieve the
 lavaan model syntax from a fitted \code{\link[dpm:dpm]{dpm::dpm()}} object.
 }
+\examples{
+
+data("WageData", package = "panelr")
+wages <- panel_data(WageData, id = id, wave = t)
+fit <- dpm(wks ~ pre(lag(union)) + lag(lwage), data = wages)
+get_syntax(fit)
+
+}

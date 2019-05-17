@@ -43,3 +43,13 @@ return the call? Default is TRUE, re-run the model.}
 \description{
 R likes it when these things have documentation.
 }
+\examples{
+
+data("WageData", package = "panelr")
+wages <- panel_data(WageData, id = id, wave = t)
+fit <- dpm(wks ~ pre(lag(union)) + lag(lwage), data = wages)
+
+# Re-run model without `lag(lwage)` term
+update(fit, . ~ . - lag(lwage))
+
+}

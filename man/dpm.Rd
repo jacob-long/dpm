@@ -19,14 +19,15 @@ parameters properly.}
 Default is FALSE.}
 
 \item{const.inv}{Constrain the dependent variable's variance to be equal
-across waves. This removes cross-sectional dependence. Default is FALSE.}
+across waves (or makes its intercept equal across waves).
+This removes cross-sectional dependence. Default is FALSE.}
 
 \item{alpha.free}{Estimate each wave of the dependent variable's loading on
 the alpha latent variable. Default is FALSE, meaning each wave has a loading
 of 1.}
 
 \item{y.lag}{Which lag(s) of the dependent variable to include in the
-regression. Default is 1, but any number of vector of numbers can be used.}
+regression. Default is 1, but any number or vector of numbers can be used.}
 
 \item{y.free}{If TRUE, allows the regression coefficient(s) for the lagged
 dependent variable to vary over time. Default is FALSE. You may alternately
@@ -90,6 +91,10 @@ the first wave's value of that variable is treated as the constant.
 You must include time-varying predictors. If you do not include a bar
 in the formula, all variables are treated as time-varying.
 
+If you would like to include an interaction between time-varying and
+time-invariant predictors, you can add a third part to the formula to
+specify that term.
+
 \emph{Predetermined variables}:
 
 To set a variable as predetermined, or weakly exogenous, surround the
@@ -101,7 +106,12 @@ and \code{ed} is a strictly exogenous time-invariant predictor.
 
 To lag a predictor, surround the variable with a \code{lag} function in
 the same way. Note that the lag function used is specific to this package,
-so it does not work the same way as the built-in lag function.
+so it does not work the same way as the built-in lag function (i.e., it
+understands that you can only lag values \emph{within} entities).
+
+\strong{Note}: CFI and TLI model fit measures for these models should not be
+used. They are anti-conservative compared to other implementations and
+we have not yet figured out how to get more plausible values.
 }
 \examples{
 # Load example data
@@ -123,6 +133,6 @@ for cross-lagged panel models with fixed effects. \emph{Socius}, \emph{3}, 1–1
 http://journals.sagepub.com/doi/10.1177/2378023117710578
 }
 \author{
-Jacob A. Long, in consultation with Richard A. Williams. All errors
-are Jacob's.
+Jacob A. Long, in consultation with Richard A. Williams and
+Paul D. Allison. All errors are Jacob's.
 }
