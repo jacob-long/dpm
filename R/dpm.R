@@ -238,7 +238,7 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   out@call <- sys.call()
   out@formula <- Formula::Formula(formula)
 
-  out@call_info <- list(dv = pf$dv, tot_obs = nobs_o,
+  out@call_info <- list(dv = dv, tot_obs = nobs_o,
                         complete_obs = model$complete_obs, endogs = pf$endogs,
                         exogs = pf$exogs, start = periods[model$start],
                         end = periods[model$end],
@@ -408,8 +408,9 @@ print.summary.dpm <- function(x, ...) {
       " = ", fitms["rmsea.pvalue"], "\n", sep = "")
   cat(italic("SRMR"), "=", fitms["srmr"], "\n\n")
 
-  if (!is_false(a$y.free) | !is_false(a$x.free)) {
+  if (!all(is_false(a$y.free)) | !all(is_false(a$x.free))) {
     coeft <- split(coeft, coeft$t)
+    names(coeft) <- gsub(x$model@call_info$dv, "", names(coeft))
     for (i in 1:length(coeft)) {
       cat(inverse("t = ", names(coeft)[i], "\n", sep = ""))
       rownames(coeft[[i]]) <- coeft[[i]][["coef"]]
