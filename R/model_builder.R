@@ -180,11 +180,13 @@ model_builder <- function(mf, pf, dv, endogs, exogs, constants, id, wave,
     ## Lastly, add prior wave of DV
     for (lag.y in y.lag) {
       if (lag.y == 0) {next}
-      lag_term <- if (y.free == TRUE | lag.y %in% y.free) {NULL} else {
+      lag_term <- if ((all(is.logical(y.free)) & y.free) | lag.y %in% y.free) {
+        NULL
+      } else {
         paste0("p", lag.y, " * ")
       }
       reg <- paste(reg, " + ", lag_term, vbywave[[ch(w - lag.y)]][dv], sep = "")
-      if (y.free == FALSE) {
+      if (all(y.free == FALSE)) {
         var_coefs[nrow(var_coefs) + 1,] <-  list(dv, paste0("p", lag.y), lag.y)
       } else {
         var_coefs[nrow(var_coefs) + 1,] <-  list(dv, "", lag.y)
