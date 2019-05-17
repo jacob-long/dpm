@@ -18,6 +18,31 @@ test_that("dpm stops with invalid x.free", {
                      x.free = "fem"))
 })
 
+test_that("dpm handles factor variables", {
+  wages$blkf <- factor(wages$blk)
+  wages$unnf <- factor(wages$union)
+  expect_s4_class(dpm(wks ~ lwage + unnf + lag(unnf) | blkf, data = wages),
+                  "dpm")
+})
+
+test_that("dpm can implement interactions", {
+  wages$blkf <- factor(wages$blk)
+  wages$unnf <- factor(wages$union)
+  expect_s4_class(suppressWarnings(dpm(wks ~ lwage * union, data = wages)),
+                  "dpm")
+  expect_s4_class(suppressWarnings(
+    dpm(wks ~ lwage | blk | lwage * blk, data = wages)), "dpm")
+  expect_s4_class(suppressWarnings(
+    dpm(wks ~ pre(lwage) | blk | pre(lwage) * blk, data = wages)),
+                  "dpm")
+  expect_s4_class(suppressWarnings(
+    dpm(wks ~ lag(lwage) | blk | lag(lwage) * blk, data = wages)),
+                  "dpm")
+  expect_s4_class(suppressWarnings(
+    dpm(wks ~ lwage + lag(unnf) | blkf | blkf * lag(unnf),
+                      data = wages)), "dpm")
+})
+
 context("Utilities and extractors")
 
 test_that("dpm prints lavaan syntax", {
