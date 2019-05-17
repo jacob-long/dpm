@@ -9,13 +9,13 @@ Authors@R: c(person(given = "Jacob A.",
   person(given = "Paul D.", family = "Allison", role = "aut",
   comment = c(ORCID = "0000-0002-0646-5242")))
 Description: Implements the dynamic panel models described by Allison, Williams,
- and Moral-Benito (2017) in R. This class of models uses structural equation 
- modeling to specify dynamic (lagged dependent variable) models with 
- fixed effects for panel data. Additionally, models may have predictors
- that are only weakly exogenous, i.e., are affected by prior values of 
- the dependent variable. Options also allow for random effects,
- dropping the lagged dependent variable, and a number of other specification
- choices.
+ and Moral-Benito (2017 <doi:10.1177/2378023117710578>) in R. 
+ This class of models uses structural equation modeling to specify dynamic 
+ (lagged dependent variable) models with fixed effects for panel data. 
+ Additionally, models may have predictors that are only weakly exogenous, i.e.,
+ are affected by prior values of the dependent variable. Options also allow for
+ random effects, dropping the lagged dependent variable, and a number of other 
+ specification choices.
 License: MIT + file LICENSE
 BugReports: https://github.com/jacob-long/dpm/issues
 URL: https://github.com/jacob-long/dpm
@@ -38,7 +38,6 @@ Suggests: broom,
     rmarkdown,
     covr,
     testthat
-Remotes: jacob-long/panelr
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 6.1.1.9000
 Roxygen: list(markdown = TRUE)
