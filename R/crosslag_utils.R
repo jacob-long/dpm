@@ -28,6 +28,9 @@ formula_parser <- function(formula, dv, data) {
     if (make.names(x) != x & x %in% names(data)) un_bt(x) else x
   })
 
+  evarying <- unique(c(varying,
+               str_replace(varying, "(.*)(pre\\()(.*)(\\))(.*)", "\\1\\3\\5")))
+
   if (conds == 1) {
     # There are no constants
     constants <- NULL
@@ -81,7 +84,7 @@ formula_parser <- function(formula, dv, data) {
   # Within by within interactions
   if (any_interaction(formula)) {
     wint_labs <- sapply(get_interactions(formula), function(x) {
-      if (all(x %in% varying)) paste(x, collapse = "*") else NULL
+      if (all(x %in% evarying)) paste(x, collapse = "*") else NULL
     })
   } else {wint_labs <- NULL}
   if (!is.null(wint_labs)) {
@@ -91,7 +94,7 @@ formula_parser <- function(formula, dv, data) {
   # Between by between interactions
   if (any_interaction(formula)) {
     bint_labs <- sapply(get_interactions(formula), function(x) {
-      if (all(x %nin% varying)) paste(x, collapse = ":") else NULL
+      if (all(x %nin% varying)) paste(x, collapse = "*") else NULL
     })
   } else {bint_labs <- NULL}
   if (!is.null(bint_labs)) {
@@ -102,7 +105,7 @@ formula_parser <- function(formula, dv, data) {
   if (any_interaction(formula)) {
     cint_labs <- sapply(get_interactions(formula), function(x) {
       # Looking for mix of within and between vars in an interaction
-      if (any(x %in% varying) & any(x %nin% varying)) {
+      if (any(x %in% evarying) & any(x %nin% evarying)) {
         paste(x, collapse = "*")
       } else NULL
     })
@@ -169,8 +172,9 @@ formula_parser <- function(formula, dv, data) {
                            as.numeric(str_detect(wint, "(?<=lag\\().*(?=\\))")))
       # potential cross-lag ints are complicated so now I try to deal with them
       if (str_detect(wint, "(?<=lag\\().*(?=\\))")) {
-        parts <- str_split(wint, ":|\\*")
+        parts <- str_split(wint, ":|\\*")[[1]]
         lags <- NULL
+        parts <- str_subset(parts, "(?<=lag\\().*(?=\\))")
         for (part in parts) {
           # Convert to call to match the arguments and unambiguously get the n =
           the_call <- match.call(dplyr::lag, call = parse(text = part))
@@ -194,8 +198,9 @@ formula_parser <- function(formula, dv, data) {
                            as.numeric(str_detect(cint, "(?<=lag\\().*(?=\\))")))
       # potential cross-lag ints are complicated so now I try to deal with them
       if (str_detect(cint, "(?<=lag\\().*(?=\\))")) {
-        parts <- str_split(cint, ":|\\*")
+        parts <- str_split(cint, ":|\\*")[[1]]
         lags <- NULL
+        parts <- str_subset(parts, "(?<=lag\\().*(?=\\))")
         for (part in parts) {
           # Convert to call to match the arguments and unambiguously get the n =
           the_call <- match.call(dplyr::lag, call = parse(text = part))
@@ -210,6 +215,8 @@ formula_parser <- function(formula, dv, data) {
 
   constants <- c(constants, bint_labs)
   allvars <- unique(c(dv, v_info$root, constants, int_vars))
+  allvars <- stringr::str_replace(allvars, "(.*)(pre\\()(.*)(\\))(.*)",
+                                  "\\1\\3\\5")
 
   v_info$root[is.na(v_info$root)] <- v_info$term[is.na(v_info$root)]
 
