@@ -63,7 +63,7 @@ Accordingly, what was once the `clfe` function is now called `dpm`.
 
 Internally, the `dpm` class is now an S4 object that contains the `lavaan`
 class. This means that any method implemented for `lavaan` objects that isn't
-expliclty defined by this package should simply treat `dpm` objects as if they
+explicitly defined by this package should simply treat `dpm` objects as if they
 were `lavaan` objects.
 
 The `summary` method now has more options and is more similar to `lavaan`'s

@@ -151,7 +151,7 @@ specification:
   - `const.inv`: This constrains the constants to be equal in each wave.
     It is FALSE by default, but if TRUE it eliminates cross-sectional
     dependence.
-  - `y.free`: This allows the regression coefficent of the lagged DV to
+  - `y.free`: This allows the regression coefficient of the lagged DV to
     vary across time. It is FALSE by default and you can either set it
     to TRUE or to the specific lag number(s).
   - `x.free`: This allows the regression coefficients for the predictors
