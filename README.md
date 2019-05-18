@@ -27,10 +27,10 @@ likelihood estimation and offering the missing data handling and
 flexibility afforded by SEM. This package will reshape your data,
 specify the model properly, and fit it with `lavaan`.
 
-Note: This software is in development. It is best to cross-reference all
-results with xtdpdml for Stata. Go to
-<https://www3.nd.edu/~rwilliam/dynamic/> to learn about xtdpdml and the
-underlying method. You may also be interested in the article by Paul
+If a result doesn’t seem right, it would be a good idea to
+cross-reference it with `xtdpdml` for Stata. Go to
+<https://www3.nd.edu/~rwilliam/dynamic/> to learn about `xtdpdml` and
+the underlying method. You may also be interested in the article by Paul
 Allison, Richard Williams, and Enrique Moral-Benito in **Socius**,
 accessible
 [here](http://journals.sagepub.com/doi/full/10.1177/2378023117710578).
