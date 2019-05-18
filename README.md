@@ -117,7 +117,7 @@ summary(fit)
     Time periods: 2 - 7 
     
     MODEL FIT:
-    <U+0001D6D8>²(76) = 138.476
+    𝛘²(76) = 138.476
     RMSEA = 0.037, 90% CI [0.027, 0.047]
     p(RMSEA < .05) = 0.986
     SRMR = 0.025 
@@ -129,7 +129,7 @@ summary(fit)
     | ed                | -0.107 | 0.056 | -1.893 | 0.058 |
     | wks (t - 1)       |  0.188 | 0.020 |  9.586 | 0.000 |
     
-    Model converged after 603 iterations
+    Model converged after 613 iterations
 
 Any arguments supplied other than those that are documented within the
 `dpm` function are passed on to `sem` from the `lavaan` package.
