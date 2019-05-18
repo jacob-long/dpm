@@ -38,9 +38,11 @@ test_that("dpm can implement interactions", {
   expect_s4_class(suppressWarnings(
     dpm(wks ~ lag(lwage) | blk | lag(lwage) * blk, data = wages)),
                   "dpm")
-  expect_s4_class(suppressWarnings(
-    dpm(wks ~ lwage + lag(unnf) | blkf | blkf * lag(unnf),
-                      data = wages)), "dpm")
+})
+
+test_that("dpm can handle pre-determined by pre-determined interactions", {
+  expect_s4_class(suppressWarnings(dpm(wks ~ pre(lwage) * pre(union),
+                                       data = wages)), "dpm")
 })
 
 context("Utilities and extractors")

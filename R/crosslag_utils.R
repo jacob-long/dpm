@@ -165,7 +165,9 @@ formula_parser <- function(formula, dv, data) {
   if (length(wint_labs) > 0) {
     for (wint in wint_labs) {
       endog <- str_detect(wint, "(?<=pre\\().*(?=\\))")
-      wint <- str_replace(wint, "(.*)(pre\\()(.*)(\\))(.*)", "\\1\\3\\5")
+      while (stringr::str_detect(wint, "(?<=pre\\().*(?=\\))")) {
+        wint <- str_replace(wint, "(.*)(pre\\()(.*)(\\))(.*)", "\\1\\3\\5")
+      }
 
       my_row <- nrow(v_info) + 1
       v_info[my_row,] <- list(wint, wint, 0, endog,
@@ -183,15 +185,19 @@ formula_parser <- function(formula, dv, data) {
         v_info[my_row, "max_lag"] <- max(lags)
       }
     }
-    wint_labs <- stringr::str_replace(wint_labs, "(.*)(pre\\()(.*)(\\))(.*)",
-                                      "\\1\\3\\5")
+    while (stringr::str_detect(wint_labs, "(?<=pre\\().*(?=\\))")) {
+      wint_labs <- str_replace(wint_labs, "(.*)(pre\\()(.*)(\\))(.*)",
+                               "\\1\\3\\5")
+    }
   }
 
   # Deal with time-varying by time-varying by constant interactions
   if (length(cint_labs) > 0) {
     for (cint in cint_labs) {
       endog <- str_detect(cint, "(?<=pre\\().*(?=\\))")
-      cint <- str_replace(cint, "(.*)(pre\\()(.*)(\\))(.*)", "\\1\\3\\5")
+      while (stringr::str_detect(cint, "(?<=pre\\().*(?=\\))")) {
+        cint <- str_replace(cint, "(.*)(pre\\()(.*)(\\))(.*)", "\\1\\3\\5")
+      }
 
       my_row <- nrow(v_info) + 1
       v_info[my_row,] <- list(cint, cint, 0, endog,
@@ -209,13 +215,15 @@ formula_parser <- function(formula, dv, data) {
         v_info[my_row, "max_lag"] <- max(lags)
       }
     }
-    cint_labs <- stringr::str_replace(cint_labs, "(.*)(pre\\()(.*)(\\))(.*)",
-                                      "\\1\\3\\5")
+    while (stringr::str_detect(cint_labs, "(?<=pre\\().*(?=\\))")) {
+      cint_labs <- str_replace(cint_labs, "(.*)(pre\\()(.*)(\\))(.*)",
+                               "\\1\\3\\5")
+    }
   }
 
   constants <- c(constants, bint_labs)
   allvars <- unique(c(dv, v_info$root, constants, int_vars))
-  allvars <- stringr::str_replace(allvars, "(.*)(pre\\()(.*)(\\))(.*)",
+  allvars <- stringr::str_replace_all(allvars, "(.*)(pre\\()(.*)(\\))(.*)",
                                   "\\1\\3\\5")
 
   v_info$root[is.na(v_info$root)] <- v_info$term[is.na(v_info$root)]
