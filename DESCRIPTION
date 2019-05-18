@@ -34,10 +34,7 @@ Imports: panelr,
     stats4
 Suggests: broom,
     tibble,
-    knitr,
-    rmarkdown,
     covr,
     testthat
-VignetteBuilder: knitr
 RoxygenNote: 6.1.1.9000
 Roxygen: list(markdown = TRUE)
