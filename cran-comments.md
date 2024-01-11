@@ -1,7 +1,9 @@
 ## Test environments
-* local Windows 10 install, R 3.6.0
-* Ubuntu 16.04 (on travis-ci), R-release and R-devel
-* Windows 2012 Server (on Appveyor; devel and release)
+* Local macOS install, R 4.3.2
+* ubuntu-latest (via Github Actions), R-release, R-devel, oldrel-1
+* macOS-latest (via Github Actions), R-release
+* windows-latest (via Github Actions), R-release
+* Windows 2012 Server (on Appveyor) R-release, R-devel
 
 ## R CMD check results
 
