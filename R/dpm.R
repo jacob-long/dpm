@@ -139,8 +139,8 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
       stop_wrap("data argument must be a data frame.")
     }
 
-    id <- as_name(enexpr(id))
-    wave <- as_name(enexpr(wave))
+    id <- as_name(enquo(id))
+    wave <- as_name(enquo(wave))
     data <- panelr::panel_data(data, !! sym(id), !! sym(wave))
   } else {
     wave <- panelr::get_wave(data)
@@ -167,7 +167,7 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   pf <- formula_parser(formula, dv, data)
 
   # Need to add interaction variables to data frame before calling model_frame
-  if (length(pf$wint_labs) > 0 | length(pf$cint_labs) > 0 |
+  if (length(pf$wint_labs) > 0 || length(pf$cint_labs) > 0 ||
       length(pf$bint_labs) > 0) {
     for (int in c(pf$wint_labs, pf$cint_labs, pf$bint_labs)) {
       new_name <- make_names(int, TRUE)

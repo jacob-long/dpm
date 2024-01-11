@@ -14,7 +14,7 @@ Default is TRUE.}
 }
 \description{
 This helper function provides a simple way to retrieve the
-lavaan model syntax from a fitted \code{\link[dpm:dpm]{dpm::dpm()}} object.
+lavaan model syntax from a fitted \code{\link[=dpm]{dpm()}} object.
 }
 \examples{
 

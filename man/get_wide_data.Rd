@@ -11,7 +11,7 @@ get_wide_data(model)
 }
 \description{
 This helper function provides a simple way to retrieve the
-widened data from a fitted \code{\link[dpm:dpm]{dpm::dpm()}} object.
+widened data from a fitted \code{\link[=dpm]{dpm()}} object.
 }
 \examples{
 

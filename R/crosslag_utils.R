@@ -1,5 +1,6 @@
 #' @importFrom stats terms
 #' @import stringr
+#' @import dplyr
 #' @importFrom panelr are_varying
 formula_parser <- function(formula, dv, data) {
   # See how many parts the formula has
@@ -138,7 +139,7 @@ formula_parser <- function(formula, dv, data) {
       the_call <-
         match.call(dplyr::lag, call = parse(text = v_info$term[i]))
       v_info$lag[i] <- if (!is.null(the_call$n)) the_call$n else 1
-      v_info$root[i] <- as.character(the_call$x)
+      v_info$root[i] <- to_char(the_call$x)
     }
   }
 
@@ -165,7 +166,7 @@ formula_parser <- function(formula, dv, data) {
   if (length(wint_labs) > 0) {
     for (wint in wint_labs) {
       endog <- str_detect(wint, "(?<=pre\\().*(?=\\))")
-      while (stringr::str_detect(wint, "(?<=pre\\().*(?=\\))")) {
+      while(stringr::str_detect(wint, "(?<=pre\\().*(?=\\))")) {
         wint <- str_replace(wint, "(.*)(pre\\()(.*)(\\))(.*)", "\\1\\3\\5")
       }
 
@@ -185,7 +186,7 @@ formula_parser <- function(formula, dv, data) {
         v_info[my_row, "max_lag"] <- max(lags)
       }
     }
-    while (stringr::str_detect(wint_labs, "(?<=pre\\().*(?=\\))")) {
+    while (any(stringr::str_detect(wint_labs, "(?<=pre\\().*(?=\\))"))) {
       wint_labs <- str_replace(wint_labs, "(.*)(pre\\()(.*)(\\))(.*)",
                                "\\1\\3\\5")
     }
@@ -215,7 +216,7 @@ formula_parser <- function(formula, dv, data) {
         v_info[my_row, "max_lag"] <- max(lags)
       }
     }
-    while (stringr::str_detect(cint_labs, "(?<=pre\\().*(?=\\))")) {
+    while (any(stringr::str_detect(cint_labs, "(?<=pre\\().*(?=\\))"))) {
       cint_labs <- str_replace(cint_labs, "(.*)(pre\\()(.*)(\\))(.*)",
                                "\\1\\3\\5")
     }

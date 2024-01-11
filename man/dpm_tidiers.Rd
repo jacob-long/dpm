@@ -5,9 +5,9 @@
 \alias{glance.dpm}
 \title{Tidy methods for dpm}
 \usage{
-tidy.dpm(x, conf.int = FALSE, conf.level = 0.95, ...)
+\method{tidy}{dpm}(x, conf.int = FALSE, conf.level = 0.95, ...)
 
-glance.dpm(x, ...)
+\method{glance}{dpm}(x, ...)
 }
 \arguments{
 \item{x}{A \code{dpm} object.}
@@ -16,7 +16,7 @@ glance.dpm(x, ...)
 interval in the tidy data frame.}
 
 \item{conf.level}{The confidence level to use for the confidence interval
-when \code{conf.int} is TRUE. Default is .95, corresponding to a 95% confidence
+when \code{conf.int} is TRUE. Default is .95, corresponding to a 95\% confidence
 interval.}
 
 \item{...}{Other arguments passed to \link[dpm]{summary.dpm}.}

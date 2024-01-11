@@ -15,6 +15,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{panelr}{\code{\link[panelr]{panel_data}}, \code{\link[panelr]{long_panel}}, \code{\link[panelr]{widen_panel}}, \code{\link[panelr]{get_wave}}, \code{\link[panelr]{get_id}}}
+  \item{panelr}{\code{\link[panelr:get_wave]{get_id}}, \code{\link[panelr]{get_wave}}, \code{\link[panelr]{long_panel}}, \code{\link[panelr]{panel_data}}, \code{\link[panelr]{widen_panel}}}
 }}
 
