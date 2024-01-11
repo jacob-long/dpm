@@ -3,7 +3,7 @@ Type: Package
 Title: Dynamic Panel Models Fit with Maximum Likelihood
 Version: 1.2.0
 Authors@R: c(person(given = "Jacob A.",
-  family = "Long", email = "long.1377@osu.edu", 
+  family = "Long", email = "jacob.long@sc.edu", 
   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1582-6214")),
   person(given = "Richard A.", family = "Williams", role = "aut"),
   person(given = "Paul D.", family = "Allison", role = "aut",
