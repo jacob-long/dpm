@@ -4,9 +4,9 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 # dpm
 
-[![GitHub tag](https://img.shields.io/github/tag/jacob-long/dpm.svg?label=Github)](https://github.com/jacob-long/dpm) [![Travis-CI Build Status](https://travis-ci.org/jacob-long/dpm.svg?branch=master)](https://travis-ci.org/jacob-long/dpm)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/jacob-long/dpm?branch=master&svg=true)](https://ci.appveyor.com/project/jacob-long/dpm)
-[![Coverage Status](https://img.shields.io/codecov/c/github/jacob-long/dpm/master.svg)](https://codecov.io/github/jacob-long/dpm?branch=master)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version-ago/dpm)](https://cran.r-project.org/package=dpm) [![GitHub tag](https://img.shields.io/github/tag/jacob-long/dpm.svg?label=Github)](https://github.com/jacob-long/dpm) [![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/dpm)](https://cran.r-project.org/package=dpm)
+[![Build Status](https://github.com/jacob-long/dpm/workflows/R-CMD-check/badge.svg)](https://github.com/jacob-long/interactions/actions) [![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/qfyn5cwomufqxath?svg=true)](https://ci.appveyor.com/project/jacob-long/interactions) [![codecov](https://codecov.io/gh/jacob-long/dpm/branch/master/graph/badge.svg)](https://codecov.io/gh/jacob-long/dpm) 
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
 
 
 ```{r, echo = FALSE}
@@ -138,6 +138,10 @@ of strings of the predictors whose coefficients should be set free over time.
 * `alpha.free`: If TRUE, relaxes the constraint that the fixed effects are 
 equal across time. Default is FALSE to be consistent with how fixed effects
 models normally work.
+* `partial.pre`: If TRUE (FALSE by default), predetermined lagged predictors 
+will also be allowed to correlate with the contemporaneous error term as 
+[suggested by Paul Allison](https://statisticalhorizons.com/getting-the-lags-right-a-new-solution/)
+for scenarios when it's not clear whether you have chosen the right lag structure.
 
 ## Summary options
 
@@ -240,13 +244,18 @@ take some time to implement. (added in `1.1.1`)
 
 # References
 
+Allison, P. (2022, October 24). Getting the lags right – a new solution. 
+*Statistical Horizons*. 
+https://statisticalhorizons.com/getting-the-lags-right-a-new-solution/
+
 Allison, P. D., Williams, R., & Moral-Benito, E. (2017). Maximum likelihood for
 cross-lagged panel models with fixed effects. *Socius*, *3*, 1–17.
 https://doi.org/10.1177/2378023117710578
 
-Leszczensky, L., & Wolbring, T. (2018, August 30). How to deal with reverse 
-causality using panel data? Recommendations for researchers based on a 
-simulation study. Working paper. https://doi.org/10.31235/osf.io/8xb4z
+Leszczensky, L., & Wolbring, T. (2022). How to deal with reverse causality using
+panel data? Recommendations for researchers based on a simulation study. 
+*Sociological Methods & Research*, *51*(2), 837–865. 
+https://doi.org/10.1177/0049124119882473
 
 Moral-Benito, E., Allison, P., & Williams, R. (2019). Dynamic panel data
 modelling using maximum likelihood: An alternative to Arellano-Bond. 
