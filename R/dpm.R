@@ -191,6 +191,10 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
   mod_formula <- as.formula(mod_formula)
   mf <- panelr::model_frame(mod_formula, data = pf$data)
   names(mf) %just% pf$v_info$root <- make_names(names(mf) %just% pf$v_info$root)
+  names(mf) %just% pf$constants <- make_names(names(mf) %just% pf$constants)
+  pf$constants <- make_names(pf$constants)
+  names(mf) %just% dv <- make_names(names(mf) %just% dv)
+  dv <- make_names(dv)
 
   # Quick little helper
   get_raw_vars <- function(vars) {
