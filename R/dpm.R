@@ -31,6 +31,9 @@
 #'  of predictors to vary.
 #' @param fixed.effects Fit a fixed effects model? Default is TRUE. If FALSE,
 #'  you get a random effects specification instead.
+#' @param partial.pre Make lagged, predetermined predictors (i.e., they are 
+#'  surrounded by pre() in the model formula) correlated with the contemporaneous
+#'  error term, as discussed in Allison (2022)? Default is FALSE.
 #' @param print.only Instead of estimating the model, print the \pkg{lavaan}
 #'  model string to the console instead.
 #' @param err.inv Deprecated, same purpose as `error.inv`.
@@ -123,8 +126,9 @@
 
 dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                 alpha.free = FALSE, y.lag = 1, y.free = FALSE,
-                x.free = FALSE, fixed.effects = TRUE, print.only = FALSE,
-                id = NULL, wave = NULL, err.inv = NULL, weights = NULL, ...) {
+                x.free = FALSE, fixed.effects = TRUE, partial.pre = FALSE,
+                print.only = FALSE, id = NULL, wave = NULL, err.inv = NULL,
+                weights = NULL, ...) {
 
   formula <- Formula::Formula(formula)
   dv <- as.character((attr(formula, "lhs")))
@@ -213,8 +217,8 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
                          err.inv = error.inv, const.inv = const.inv,
                          alpha.free = alpha.free, y.lag = y.lag,
                          y.free = y.free, x.free = x.free,
-                         fixed.effects = fixed.effects,
-                         weights = !is.null(weights))
+                         fixed.effects = fixed.effects, 
+                         partial.pre = partial.pre, weights = !is.null(weights))
 
   # If only printing is wanted, just print it and stop
   if (print.only == TRUE) {

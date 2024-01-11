@@ -1,6 +1,6 @@
 model_builder <- function(mf, pf, dv, endogs, exogs, constants, id, wave,
                           err.inv, const.inv, alpha.free, y.lag, y.free, x.free,
-                          fixed.effects, weights) {
+                          fixed.effects, partial.pre, weights) {
 
 
 ##### Get lag info ############################################################
@@ -351,7 +351,8 @@ model_builder <- function(mf, pf, dv, endogs, exogs, constants, id, wave,
   endogs_errs <- c()
   reg <- NULL
   if (!is.null(endogs)) {
-
+    # To allow partial correlation, you just need to flip a 1 to a 0...
+    lag_offset <- ifelse(partial.pre, yes = 0, no = 1)
     # Using this to control whether final wave of endogenous pred is used
     for (w in start:(end - 1)) {
 
@@ -361,7 +362,7 @@ model_builder <- function(mf, pf, dv, endogs, exogs, constants, id, wave,
 
       for (var in endogs) {
 
-        w2 <- w + 1
+        w2 <- w + lag_offset
         while (w2 <= end - min(endogs_lags[[var]])) {
           if (w2 > end) {next}
           reg_vars <- c(reg_vars, vbywave[[ch(w2)]][var])

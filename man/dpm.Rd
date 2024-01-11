@@ -4,10 +4,24 @@
 \alias{dpm}
 \title{Dynamic panel models fit with maximum likelihood}
 \usage{
-dpm(formula, data, error.inv = FALSE, const.inv = FALSE,
-  alpha.free = FALSE, y.lag = 1, y.free = FALSE, x.free = FALSE,
-  fixed.effects = TRUE, print.only = FALSE, id = NULL, wave = NULL,
-  err.inv = NULL, weights = NULL, ...)
+dpm(
+  formula,
+  data,
+  error.inv = FALSE,
+  const.inv = FALSE,
+  alpha.free = FALSE,
+  y.lag = 1,
+  y.free = FALSE,
+  x.free = FALSE,
+  fixed.effects = TRUE,
+  partial.pre = FALSE,
+  print.only = FALSE,
+  id = NULL,
+  wave = NULL,
+  err.inv = NULL,
+  weights = NULL,
+  ...
+)
 }
 \arguments{
 \item{formula}{Model formula. See details for instructions on specifying
@@ -42,6 +56,10 @@ of predictors to vary.}
 
 \item{fixed.effects}{Fit a fixed effects model? Default is TRUE. If FALSE,
 you get a random effects specification instead.}
+
+\item{partial.pre}{Make lagged, predetermined predictors (i.e., they are
+surrounded by pre() in the model formula) correlated with the contemporaneous
+error term, as discussed in Allison (2022)? Default is FALSE.}
 
 \item{print.only}{Instead of estimating the model, print the \pkg{lavaan}
 model string to the console instead.}

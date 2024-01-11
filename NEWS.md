@@ -1,3 +1,11 @@
+# dpm 1.2.0 
+
+## Enhancement
+* For cases in which the proper lag structure is ambiguous, you 
+may now use the `partial.pre` argument to `dpm()` to use the strategy 
+proposed by 
+(Allison (2022))[https://statisticalhorizons.com/getting-the-lags-right-a-new-solution/].
+
 # dpm 1.1.2
 
 ## Bug fixes:
