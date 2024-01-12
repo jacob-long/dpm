@@ -8,4 +8,5 @@
 
 0 errors | 0 warnings | 1 note
 
-* This is a new package.
+* This is a new package. This submission addresses documentation issues that 
+were flagged on the previous submission.
