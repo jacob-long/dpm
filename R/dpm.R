@@ -544,7 +544,11 @@ setGeneric("coef")
 #' @method coef dpm
 coef.dpm <- function(object) {
   out <- summary(object)$coefficients[,"Est."]
-  names(out) <- summary(object)$coefficients$coef
+  coef_names <- summary(object)$coefficients$coef
+  if (length(out) != length(unique(coef_names))) {
+    coef_names <- paste0(coef_names, "_", summary(object)$coefficients[,1])
+  }
+  names(out) <- coef_names
   return(out)
 }
 
