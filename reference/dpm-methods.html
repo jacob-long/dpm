@@ -114,6 +114,29 @@ return the call? Default is TRUE, re-run the model.</p></dd>
 <dd><p>A <code>dpm</code> object</p></dd>
 
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    
+
+<p><strong><code>update.dpm()</code></strong>: Returns an updated <code>dpm</code> object.</p>
+
+
+<p><strong><code>coef.dpm()</code></strong>: Returns a numeric vector of coefficients. If the model
+was fit with <code>x.free = TRUE</code> and/or <code>y.free = TRUE</code>, the coefficient
+names will be formatted with an underscore and the wave corresponding to
+which time period the coefficient is estimated for.</p>
+
+
+<p><strong><code>formula.dpm()</code></strong>: Returns the formula used to fit the model as a
+<code>Formula</code> object. The formula is the input to <code><a href="dpm.html">dpm()</a></code>, not the <code>lavaan</code></p>
+
+
+<p>syntax.</p>
+
+
+<p><strong><code>show.dpm()</code></strong>: Returns an invisible "NULL" while printing model info
+to console.</p>
+    </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
