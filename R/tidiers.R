@@ -19,6 +19,11 @@
 #'   fit <- dpm(wks ~ pre(lag(union)) + lag(lwage) | ed, data = wages)
 #'   tidy(fit)
 #' }
+#' @return
+#'  A tibble::tibble() with information about model components. These will be
+#'  coefficient estimates (for `tidy()`) or model fit (for `glance()`),
+#'  following the naming standards established by the \pkg{broom} package.
+#' 
 #' @rdname dpm_tidiers
 #' @rawNamespace
 #' if (getRversion() >= "3.6.0") {

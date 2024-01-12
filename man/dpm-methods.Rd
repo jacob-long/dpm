@@ -39,6 +39,21 @@ return the call? Default is TRUE, re-run the model.}
 
 \item{x}{A \code{dpm} object}
 }
+\value{
+\strong{\code{update.dpm()}}: Returns an updated \code{dpm} object.
+
+\strong{\code{coef.dpm()}}: Returns a numeric vector of coefficients. If the model
+was fit with \code{x.free = TRUE} and/or \code{y.free = TRUE}, the coefficient
+names will be formatted with an underscore and the wave corresponding to
+which time period the coefficient is estimated for.
+
+\strong{\code{formula.dpm()}}: Returns the formula used to fit the model as a
+\code{Formula} object. The formula is the input to \code{dpm()}, not the \code{lavaan}
+syntax.
+
+\strong{\code{show.dpm()}}: Returns an invisible "NULL" while printing model info
+to console.
+}
 \description{
 R likes it when these things have documentation.
 }

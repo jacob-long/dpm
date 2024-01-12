@@ -12,6 +12,10 @@ get_syntax(model, print = TRUE)
 \item{print}{Print the syntax to the console so it is formatted properly?
 Default is TRUE.}
 }
+\value{
+Returns a string with the lavaan model syntax for \code{model}. If \code{print} is
+TRUE, it is printed to the console as well.
+}
 \description{
 This helper function provides a simple way to retrieve the
 lavaan model syntax from a fitted \code{\link[=dpm]{dpm()}} object.

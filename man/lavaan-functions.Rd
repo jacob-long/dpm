@@ -9,7 +9,11 @@ lav_summary(x, ...)
 \arguments{
 \item{x}{The \code{\link{dpm}} object}
 
-\item{...}{Other arguments to the the lavaan function.}
+\item{...}{Other arguments to the lavaan function.}
+}
+\value{
+Returns a \code{lavaan.summary} object which contains various
+model data described in \verb{?lavaan::summary,lavaan-method}.
 }
 \description{
 This is just a quick way to get \code{lavaan}'s summary instead

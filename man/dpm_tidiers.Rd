@@ -21,6 +21,11 @@ interval.}
 
 \item{...}{Other arguments passed to \link[dpm]{summary.dpm}.}
 }
+\value{
+A tibble::tibble() with information about model components. These will be
+coefficient estimates (for \code{tidy()}) or model fit (for \code{glance()}),
+following the naming standards established by the \pkg{broom} package.
+}
 \description{
 \code{dpm} objects support the \pkg{broom} package's \code{tidy} method.
 }
