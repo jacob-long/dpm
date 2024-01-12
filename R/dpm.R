@@ -285,10 +285,13 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
 #' 
 #' 
 #' @return Returns a `summary.dpm` object, which is a list with three elements:
-#'  \itemize{model}{The `dpm` object.} 
-#'  \itemize{coefficients}{A data frame containing coefficient estimates, 
-#'   standard errors, p values, and so on.)}
-#'  \itemize{fitmeasures}{A numeric vector containing model fit information.}
+#'  
+#'  * `model`: The `dpm` object.
+#' 
+#'  * `coefficients`: A data frame containing coefficient estimates,
+#'   standard errors, p values, and so on.
+#' 
+#'  * `fitmeasures`: A numeric vector containing model fit information.
 #' 
 #' The primary function of the object is to be printed to the console.
 #' 

@@ -45,10 +45,12 @@ Default is 3. You can set a default by setting the option \code{"dpm-digits"}.}
 }
 \value{
 Returns a \code{summary.dpm} object, which is a list with three elements:
-\itemize{model}{The \code{dpm} object.}
-\itemize{coefficients}{A data frame containing coefficient estimates,
-standard errors, p values, and so on.)}
-\itemize{fitmeasures}{A numeric vector containing model fit information.}
+\itemize{
+\item \code{model}: The \code{dpm} object.
+\item \code{coefficients}: A data frame containing coefficient estimates,
+standard errors, p values, and so on.
+\item \code{fitmeasures}: A numeric vector containing model fit information.
+}
 
 The primary function of the object is to be printed to the console.
 }
