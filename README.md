@@ -10,8 +10,6 @@ tag](https://img.shields.io/github/tag/jacob-long/dpm.svg?label=Github)](https:/
 Downloads](https://cranlogs.r-pkg.org/badges/grand-total/dpm)](https://cran.r-project.org/package=dpm)
 [![Build
 Status](https://github.com/jacob-long/dpm/workflows/R-CMD-check/badge.svg)](https://github.com/jacob-long/interactions/actions)
-[![AppVeyor Build
-status](https://ci.appveyor.com/api/projects/status/qfyn5cwomufqxath?svg=true)](https://ci.appveyor.com/project/jacob-long/interactions)
 [![codecov](https://codecov.io/gh/jacob-long/dpm/branch/master/graph/badge.svg)](https://app.codecov.io/gh/jacob-long/dpm)
 [![Project Status: Active - The project has reached a stable, usable
 state and is being actively
