@@ -42,11 +42,10 @@ accessible
 
 # Installation
 
-`dpm` will soon be on CRAN. In the meantime, you can get it from Github.
+`dpm` is now on CRAN and can be installed like other R packages.
 
 ``` r
-install.packages("devtools")
-devtools::install_github("jacob-long/dpm")
+install.packages("dpm")
 ```
 
 # Usage
