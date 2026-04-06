@@ -15,7 +15,7 @@ Status](https://github.com/jacob-long/dpm/workflows/R-CMD-check/badge.svg)](http
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![MIT
-License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://opensource.org/license/mit/)
+License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
 
 This R package implements the dynamic panel data modeling framework
 described by Allison, Williams, and Moral-Benito (2017). This approach

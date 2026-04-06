@@ -1,3 +1,15 @@
+# dpm 1.3.0
+
+## Enhancement
+
+* `summary.dpm()` now reports CFI/TLI (and the associated baseline χ²/df) using
+  the same baseline specification as Stata's `xtdpdml`. The original lavaan
+  values remain available as `cfi.lavaan`/`tli.lavaan` in the returned fit
+  measures.
+* Added a compatibility safeguard for environments where
+  `parallel::detectCores()` returns `NA`, preventing `lavaan` option parsing
+  failures during examples/checks.
+
 # dpm 1.2.0 
 
 ## Enhancement
@@ -6,10 +18,11 @@ may now use the `partial.pre` argument to `dpm()` to use the strategy
 proposed by 
 [Allison (2022)](https://statisticalhorizons.com/getting-the-lags-right-a-new-solution/).
 
+
 # dpm 1.1.2
 
 ## Bug fixes:
-* The ability to do arbitrary variable transformations introduced 1.1.0 has
+* The ability to do arbitrary variable transformations introduced in 1.1.0 has
 been made to actually work since `lavaan` does not allow non-syntactic variable
 names.
 
@@ -100,4 +113,3 @@ dependency, which has some downstream effects.
 * The `panel_data` object type now inherits from `tibble`, which has pluses
 and minuses but I believe more upside than downside.
 * The `WageData` example data is now part of the `panelr` package.
-

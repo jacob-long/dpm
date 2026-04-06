@@ -127,9 +127,9 @@ the same way. Note that the lag function used is specific to this package,
 so it does not work the same way as the built-in lag function (i.e., it
 understands that you can only lag values \emph{within} entities).
 
-\strong{Note}: CFI and TLI model fit measures for these models should not be
-used. They are anti-conservative compared to other implementations and
-we have not yet figured out how to get more plausible values.
+\strong{Note}: CFI and TLI model fit measures are computed using the same
+baseline model as Stata's \code{xtdpdml}, so the reported values closely match
+that implementation for comparable specifications.
 }
 \examples{
 # Load example data

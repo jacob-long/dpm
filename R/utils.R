@@ -1,3 +1,32 @@
+sanitize_lavaan_parallel <- function() {
+  if (!is.na(suppressWarnings(parallel::detectCores()))) {
+    return(invisible(NULL))
+  }
+
+  lavaan_ns <- asNamespace("lavaan")
+  lavaan_cache <- get("lavaan_cache_env", envir = lavaan_ns)
+
+  if (!exists("opt.default", envir = lavaan_cache, inherits = FALSE) ||
+      !exists("opt.check", envir = lavaan_cache, inherits = FALSE)) {
+    suppressWarnings(get("lav_options_default", envir = lavaan_ns)())
+  }
+
+  if (exists("opt.default", envir = lavaan_cache, inherits = FALSE)) {
+    opt.default <- get("opt.default", envir = lavaan_cache)
+    opt.default$ncpus <- 1L
+    assign("opt.default", opt.default, envir = lavaan_cache)
+  }
+
+  if (exists("opt.check", envir = lavaan_cache, inherits = FALSE)) {
+    opt.check <- get("opt.check", envir = lavaan_cache)
+    if (!is.null(opt.check$ncpus$nm$bounds)) {
+      opt.check$ncpus$nm$bounds <- c(1L, 1L)
+    }
+    assign("opt.check", opt.check, envir = lavaan_cache)
+  }
+
+  invisible(NULL)
+}
 
 make_ci_labs <- function(ci.width) {
 

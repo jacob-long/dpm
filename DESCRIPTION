@@ -1,13 +1,17 @@
 Package: dpm
 Type: Package
 Title: Dynamic Panel Models Fit with Maximum Likelihood
-Version: 1.2.0
+Version: 1.3.0
 Authors@R: c(person(given = "Jacob A.",
   family = "Long", email = "jacob.long@sc.edu", 
   role = c("aut", "cre"), comment = c(ORCID = "0000-0002-1582-6214")),
   person(given = "Richard A.", family = "Williams", role = "aut"),
   person(given = "Paul D.", family = "Allison", role = "aut",
   comment = c(ORCID = "0000-0002-0646-5242")))
+Author: Jacob A. Long [aut, cre] (<https://orcid.org/0000-0002-1582-6214>),
+    Richard A. Williams [aut],
+    Paul D. Allison [aut] (<https://orcid.org/0000-0002-0646-5242>)
+Maintainer: Jacob A. Long <jacob.long@sc.edu>
 Description: Implements the dynamic panel models described by Allison, Williams,
  and Moral-Benito (2017 <doi:10.1177/2378023117710578>) in R. 
  This class of models uses structural equation modeling to specify dynamic 
@@ -29,8 +33,8 @@ Imports: panelr,
     rlang,
     dplyr,
     crayon,
-    Formula,
-    jtools (>= 2.0.1), 
+    jtools (>= 2.0.1),
+    Formula, 
     stats4
 Suggests: broom,
     tibble,

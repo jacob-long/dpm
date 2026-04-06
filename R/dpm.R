@@ -73,9 +73,9 @@
 #'  so it does not work the same way as the built-in lag function (i.e., it
 #'  understands that you can only lag values *within* entities).
 #'
-#'  **Note**: CFI and TLI model fit measures for these models should not be
-#'  used. They are anti-conservative compared to other implementations and
-#'  we have not yet figured out how to get more plausible values.
+#'  **Note**: CFI and TLI model fit measures are computed using the same
+#'  baseline model as Stata's `xtdpdml`, yielding values that closely match
+#'  that software for comparable specifications.
 #'
 #'
 #' @return An object of class `dpm` which has its own \code{summary} method.
@@ -106,8 +106,8 @@
 #' @importFrom lavaan sem lavInspect
 #' @importFrom methods as
 #' @importFrom stats as.formula
-#' @import rlang
 #' @import jtools
+#' @import rlang
 #' @importFrom panelr is_panel
 #'
 #' @examples
@@ -232,9 +232,34 @@ dpm <- function(formula, data, error.inv = FALSE, const.inv = FALSE,
 
   weights_arg <- if (!is.null(weights)) substitute(".weights") else NULL
 
-  # Fit the model with lavaan
-  s <- lavaan::sem(model = model$model, data = model$data,
-                   sampling.weights = weights_arg, ...)
+  # Fit the model with lavaan.
+  # Some check environments set non-numeric parallel defaults, so sanitize ncpus.
+  lavaan_args <- list(...)
+  if (is.null(lavaan_args$parallel)) {
+    lavaan_args$parallel <- "no"
+  }
+  if (is.null(lavaan_args$ncpus)) {
+    ncpus_opt <- getOption("Ncpus", 1L)
+    if (!is.numeric(ncpus_opt) || length(ncpus_opt) != 1L ||
+        is.na(ncpus_opt) || ncpus_opt < 1L) {
+      ncpus_opt <- 1L
+    }
+    lavaan_args$ncpus <- as.integer(ncpus_opt)
+  }
+
+  sanitize_lavaan_parallel()
+
+  s <- do.call(
+    lavaan::sem,
+    c(
+      list(
+        model = model$model,
+        data = model$data,
+        sampling.weights = weights_arg
+      ),
+      lavaan_args
+    )
+  )
 
   nobs_o <- length(unique(data[[id]]))
   # nobs_used <- lavaan::lavInspect(s, what = "ntotal")
@@ -388,6 +413,15 @@ setMethod("summary", "dpm",
   iters <- lavaan::lavInspect(object, what = "iterations")
 
   fitms <- lavaan::fitmeasures(object)
+  xtfm <- .xtdpdml_compute_fitindices(object)
+  if (!is.null(xtfm)) {
+    fitms["cfi.lavaan"] <- fitms["cfi"]
+    fitms["tli.lavaan"] <- fitms["tli"]
+    fitms["cfi"] <- xtfm["cfi"]
+    fitms["tli"] <- xtfm["tli"]
+    fitms["baseline.chisq.xtdpdml"] <- xtfm["baseline.chisq"]
+    fitms["baseline.df.xtdpdml"] <- xtfm["baseline.df"]
+  }
   fitms <- round(fitms, digits)
 
   out <- list(coefficients = coeft, model = object, fitmeasures = fitms)
@@ -420,9 +454,13 @@ print.summary.dpm <- function(x, ...) {
   cat("\U1D6D8\u00B2(", fitms["df"], ") = ", fitms["chisq"], "\n",
       sep = "")
 
-  # cat("CFI =", fitms["cfi"],"\n") # Can't trust these yet
-  # cat("TLI =", fitms["tli"],"\n")
-  #
+  if (!is.na(fitms["cfi"])) {
+    cat("CFI =", fitms["cfi"], "\n")
+  }
+  if (!is.na(fitms["tli"])) {
+    cat("TLI =", fitms["tli"], "\n")
+  }
+
   cat(italic("RMSEA")," = ", fitms["rmsea"], ", ",
       "90% CI [", fitms["rmsea.ci.lower"],
       ", ", fitms["rmsea.ci.upper"],"]", italic("\np(RMSEA < .05)"),
@@ -678,5 +716,3 @@ get_syntax <- function(model, print = TRUE) {
   if (print) {cat(model@mod_string)}
   invisible(model@mod_string)
 }
-
-

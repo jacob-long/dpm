@@ -14,6 +14,8 @@ test_that("Model is accurate", {
   s <- summary(fit)
   expect_equivalent(as.integer(s$fitmeasures["df"]), expected = 76)
   expect_equivalent(s$fitmeasures["chisq"], expected = 138.48, tolerance = 0.01)
+  expect_equivalent(s$fitmeasures["cfi"], expected = 0.935, tolerance = 0.001)
+  expect_equivalent(s$fitmeasures["tli"], expected = 0.915, tolerance = 0.001)
 })
 
 test_that("Summary produces output", {

@@ -6,3 +6,12 @@ inst/doc
 docs
 dpm.Rproj
 .DS_Store
+/.Rlib/
+/*.Rcheck/
+/README.html
+/README.knit.md
+/CRAN-SUBMISSION
+/dpm_*.tar.gz
+/*.mistral.txt
+/gclm.R
+/.github/.gitignore

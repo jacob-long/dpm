@@ -2,6 +2,8 @@
 ^\.Rproj\.user$
 ^data-raw$
 ^README\.Rmd$
+^README\.html$
+^README\.knit\.md$
 ^README-.*\.png$
 ^appveyor\.yml$
 ^\.travis\.yml$
@@ -11,3 +13,10 @@
 ^cran-comments\.md$
 ^\.github$
 ^CRAN-SUBMISSION$
+^.*\.tar\.gz$
+^\.RData$
+^\.Rhistory$
+^\.Rlib$
+^dpm\.Rcheck$
+^.*\.mistral\.txt$
+^gclm\.R$
